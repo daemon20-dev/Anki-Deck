@@ -7,6 +7,7 @@ expanding `<!-- @include name -->` lines with the matching file in src/.
 The night scene lives once in src/scene.html, so front and back can
 never drift apart.
 """
+import hashlib
 import pathlib
 import re
 
@@ -16,8 +17,16 @@ INCLUDE = re.compile(r"^<!-- @include ([\w.-]+) -->\n", re.M)
 HEADER = "<!-- Generated from src/ by tools/build.py — edit src/, then rebuild. -->\n"
 
 
+def include(name: str) -> str:
+    text = (SRC / name).read_text(encoding="utf-8")
+    # Stamp the scene with a hash of its own markup, so a live scene kept from
+    # an older version of the template is replaced instead of reused.
+    version = hashlib.sha1(text.encode("utf-8")).hexdigest()[:10]
+    return text.replace("@SCENE_VERSION@", version)
+
+
 def expand(text: str) -> str:
-    return INCLUDE.sub(lambda m: (SRC / m.group(1)).read_text(encoding="utf-8"), text)
+    return INCLUDE.sub(lambda m: include(m.group(1)), text)
 
 
 for name in ("front.html", "back.html"):

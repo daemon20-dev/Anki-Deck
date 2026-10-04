@@ -2,7 +2,7 @@
 <!-- ░░░ NIGHT SCENE ░░░
      Drawn with inline SVG so it is fully painted on the very first frame
      (no background images that load a beat later and "pop" in). -->
-<div id="gm-scene" aria-hidden="true">
+<div id="gm-scene" data-version="d02df3953c" aria-hidden="true">
   <div class="gm-layer gm-stars">
     <svg><defs><pattern id="gm-stars-a" width="420" height="340" patternUnits="userSpaceOnUse"><circle cx="58" cy="287" r="0.9" fill="#cfdcff" fill-opacity="0.51"/><circle cx="319" cy="161" r="0.7" fill="#ffffff" fill-opacity="0.50"/><circle cx="14" cy="283" r="0.7" fill="#ffffff" fill-opacity="0.83"/><circle cx="113" cy="271" r="0.8" fill="#ffffff" fill-opacity="0.95"/><circle cx="15" cy="11" r="0.8" fill="#cfdcff" fill-opacity="0.83"/><circle cx="405" cy="246" r="0.8" fill="#cfdcff" fill-opacity="0.97"/><circle cx="232" cy="118" r="0.8" fill="#cfdcff" fill-opacity="0.97"/><circle cx="387" cy="142" r="1.0" fill="#ffffff" fill-opacity="0.51"/><circle cx="264" cy="245" r="0.6" fill="#ffffff" fill-opacity="0.63"/><circle cx="302" cy="241" r="1.0" fill="#cfdcff" fill-opacity="0.73"/><circle cx="381" cy="66" r="0.6" fill="#cfdcff" fill-opacity="0.92"/><circle cx="212" cy="200" r="0.5" fill="#ffffff" fill-opacity="0.86"/><circle cx="170" cy="225" r="0.7" fill="#ffffff" fill-opacity="0.88"/><circle cx="309" cy="31" r="0.8" fill="#ffffff" fill-opacity="0.88"/><circle cx="219" cy="134" r="0.7" fill="#ffffff" fill-opacity="0.71"/><circle cx="130" cy="287" r="0.8" fill="#ffffff" fill-opacity="0.67"/><circle cx="73" cy="171" r="1.0" fill="#ffffff" fill-opacity="0.75"/><circle cx="360" cy="80" r="0.8" fill="#ffffff" fill-opacity="0.64"/><circle cx="380" cy="223" r="0.8" fill="#ffffff" fill-opacity="0.45"/><circle cx="328" cy="278" r="0.9" fill="#ffffff" fill-opacity="0.73"/><circle cx="56" cy="263" r="0.6" fill="#ffffff" fill-opacity="0.71"/><circle cx="154" cy="188" r="1.0" fill="#cfdcff" fill-opacity="0.72"/><circle cx="150" cy="118" r="0.8" fill="#ffffff" fill-opacity="0.88"/><circle cx="140" cy="204" r="0.9" fill="#ffffff" fill-opacity="0.55"/><circle cx="245" cy="291" r="0.9" fill="#cfdcff" fill-opacity="0.47"/><circle cx="395" cy="26" r="0.9" fill="#cfdcff" fill-opacity="0.46"/></pattern></defs><rect width="100%" height="100%" fill="url(#gm-stars-a)"/></svg>
   </div>
@@ -42,6 +42,8 @@
      • Anki desktop swaps the card HTML on every flip / card. The first
        scene is moved out to <body> and reused, so it is never rebuilt:
        only the card in the middle changes.
+     • If the template was edited, the new scene carries a different
+       data-version and replaces the old live one (keeping its clock).
      • Clients that reload the whole page (AnkiDroid) get a scene whose
        animations are offset by the wall clock, so every layer resumes
        exactly where the previous page left it. */
@@ -49,8 +51,11 @@
   var fresh = document.querySelector('#gm-scene:not(.gm-scene-live)');
   if (!fresh) return;
   if (live) {
-    fresh.parentNode.removeChild(fresh);
-    return;
+    if (live.getAttribute('data-version') === fresh.getAttribute('data-version')) {
+      fresh.parentNode.removeChild(fresh);
+      return;
+    }
+    live.parentNode.removeChild(live);   // outdated scene from before an edit
   }
   fresh.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
   fresh.classList.add('gm-scene-live');
