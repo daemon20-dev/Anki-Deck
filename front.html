@@ -1,0 +1,62 @@
+<!-- ░░░ NIGHT SCENE (decorative background) ░░░ -->
+<div id="gm-scene" aria-hidden="true">
+  <div class="gm-layer gm-stars"></div>
+  <div class="gm-layer gm-stars gm-stars--near"></div>
+  <div class="gm-layer">
+    <span class="gm-sparkle"></span><span class="gm-sparkle"></span>
+    <span class="gm-sparkle"></span><span class="gm-sparkle"></span>
+  </div>
+  <div class="gm-moon"></div>
+  <div class="gm-shooting"></div>
+  <div class="gm-clouds gm-clouds--high"></div>
+  <div class="gm-clouds gm-clouds--low"></div>
+  <div class="gm-layer gm-hills gm-hills--far"></div>
+  <div class="gm-layer gm-hills gm-hills--mid"></div>
+  <div class="gm-layer gm-mist"></div>
+  <div class="gm-layer gm-hills gm-hills--near"></div>
+  <div class="gm-layer gm-fireflies">
+    <span class="gm-firefly"></span><span class="gm-firefly"></span><span class="gm-firefly"></span>
+    <span class="gm-firefly"></span><span class="gm-firefly"></span><span class="gm-firefly"></span>
+    <span class="gm-firefly"></span>
+  </div>
+  <div class="gm-layer gm-vignette"></div>
+</div>
+
+<!-- ░░░ GAME PANEL (FRONT) ░░░ -->
+<div id="gm-panel" class="gm-front">
+
+  <!-- CARD CONTENT -->
+  <div id="gm-content">
+    <div id="gm-question" class="gm-block">{{Front}}</div>
+  </div>
+
+  <!-- FOOTER: explanation toggle · ease indicators · side tag -->
+  <div id="gm-footer">
+    <button id="gm-expl-btn" type="button" aria-controls="gm-expl-anim-wrap" aria-expanded="false" disabled>
+      Explanation <span class="gm-kbd">H</span>
+    </button>
+
+    <div id="gm-actions" aria-hidden="true">
+      <div class="gm-act gm-again" title="AGAIN"><div class="gm-act-ico gm-ico-x"></div></div>
+      <div class="gm-act gm-hard"  title="HARD"><div class="gm-act-ico gm-ico-gear"></div></div>
+      <div class="gm-act gm-good"  title="GOOD"><div class="gm-act-ico gm-ico-smile"></div></div>
+      <div class="gm-act gm-easy"  title="EASY"><div class="gm-act-ico gm-ico-star"></div></div>
+    </div>
+
+    <span id="gm-side-tag">Question</span>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Sync the background animations to a shared clock so the sky
+     continues smoothly between front and back instead of restarting. */
+  var scene = document.getElementById('gm-scene');
+  if (scene) {
+    scene.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
+  }
+}());
+</script>
