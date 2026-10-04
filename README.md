@@ -1,10 +1,12 @@
 # Moonlit Hills — Anki card theme
 
-A modern, sleek Anki note type styling: a glass card floating over a **looping night
-scene** — rolling hills, pines, a cabin with a flickering warm window, a glowing moon,
-twinkling stars, drifting clouds and mist, fireflies and the occasional shooting star.
+A modern, sleek Anki note type styling: a frosted-glass card floating over a subtle,
+**looping night scene** — rolling hills, pines, a cabin with a flickering warm window,
+a soft moon, faint twinkling stars, drifting cumulus clouds and mist, fireflies and the
+occasional shooting star.
 
-Shadows lean **dark blue**; highlights lean **warm orange / white**.
+Shadows lean **dark blue**. The scene keeps a few warm orange accents (moon, cabin,
+fireflies); the card itself uses cool white highlights only.
 
 | Answer (desktop) | Answer (phone) |
 | --- | --- |
@@ -28,6 +30,7 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 - **Explanation drawer** — click the button, press **H** on desktop, or bind
   AnkiDroid's *User Action 1* (`userJs1`). The button is disabled when the card has no
   explanation, and appears (disabled) on the front so the layout never shifts.
+  It sits centred under the card.
 - **Responsive** — no fixed `min-width`s; works on phones (AnkiDroid / AnkiMobile).
 - **Accessible** — honours the OS *reduce motion* setting, keyboard focus styles,
   `aria-expanded` on the toggle.
