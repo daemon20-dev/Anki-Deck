@@ -76,17 +76,28 @@
 <script>
 (function () {
   /* ── Vertical centring that never moves the question ──
-     The card is centred using its *front-side* height (question + footer),
-     on both sides. The back then opens the answer below a question that
-     sits exactly where it was. Runs before first paint. */
+     The card is centred using its *front-side* height (question + footer)
+     on both sides, so on the back the question sits exactly where it was
+     and the answer opens below it.
+
+     It runs immediately (before first paint) and again whenever the page
+     settles further: next frame, window load, fonts ready, images loaded,
+     Anki's "card shown" hook and resizes. Each run is idempotent, so if
+     the first measurement was already right nothing moves. */
+  function viewportHeight() {
+    return (window.visualViewport && window.visualViewport.height) ||
+      window.innerHeight || document.documentElement.clientHeight || 0;
+  }
+
   window.gmPlaceCard = function () {
     var panel = document.getElementById('gm-panel');
     var q = document.getElementById('gm-question');
     var footer = document.getElementById('gm-footer');
-    if (!panel || !q || !footer) return;
+    var vh = viewportHeight();
+    if (!panel || !q || !footer || !vh) return;
 
-    var ps = getComputedStyle(panel);
     var px = function (v) { return parseFloat(v) || 0; };
+    var ps = getComputedStyle(panel);
     var frontHeight =
       px(ps.paddingTop) + px(ps.paddingBottom) +
       px(ps.borderTopWidth) + px(ps.borderBottomWidth) +
@@ -96,20 +107,27 @@
     var top = 0;
     for (var el = panel; el; el = el.offsetParent) top += el.offsetTop;
 
-    var target = Math.max(16, Math.round((window.innerHeight - frontHeight) / 2));
-    panel.style.marginTop = (px(ps.marginTop) + target - top) + 'px';
+    var target = Math.max(16, Math.round((vh - frontHeight) / 2));
+    var margin = Math.round(px(ps.marginTop) + target - top);
+    if (Math.abs(margin - px(ps.marginTop)) >= 1) panel.style.marginTop = margin + 'px';
   };
 
-  window.gmPlaceCard();
+  var place = function () { window.gmPlaceCard(); };
+  place();
 
-  // Re-centre when question images finish loading or the window resizes.
+  if (window.requestAnimationFrame) requestAnimationFrame(place);
+  if (document.readyState !== 'complete') window.addEventListener('load', place);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  if (window.onShownHook && window.onShownHook.push) window.onShownHook.push(place); // Anki desktop
+
   var imgs = document.querySelectorAll('#gm-question img');
   for (var i = 0; i < imgs.length; i++) {
-    if (!imgs[i].complete) imgs[i].addEventListener('load', window.gmPlaceCard);
+    if (!imgs[i].complete) imgs[i].addEventListener('load', place);
   }
   if (!window.gmPlaceBound) {
     window.gmPlaceBound = true;
-    window.addEventListener('resize', function () { window.gmPlaceCard(); });
+    window.addEventListener('resize', place);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', place);
   }
 }());
 </script>
