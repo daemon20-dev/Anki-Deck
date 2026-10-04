@@ -1,4 +1,3 @@
-<!-- Generated from src/ by tools/build.py — edit src/, then rebuild. -->
 <!-- ░░░ NIGHT SCENE ░░░
      Drawn with inline SVG so it is fully painted on the very first frame
      (no background images that load a beat later and "pop" in). -->
@@ -54,21 +53,3 @@
   document.body.insertBefore(fresh, document.body.firstChild);
 }());
 </script>
-
-<!-- ░░░ GAME PANEL (FRONT) ░░░ -->
-<div id="gm-panel" class="gm-front">
-
-  <!-- CARD CONTENT -->
-  <div id="gm-content">
-    <div id="gm-question" class="gm-block">{{Front}}</div>
-  </div>
-
-  <!-- FOOTER: explanation toggle -->
-  <div id="gm-footer">
-    <button id="gm-expl-btn" type="button" aria-controls="gm-expl-anim-wrap" aria-expanded="false" disabled>
-      Explanation <span class="gm-kbd">H</span>
-    </button>
-  </div>
-
-</div>
-

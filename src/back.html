@@ -1,0 +1,77 @@
+<!-- @include scene.html -->
+
+<!-- ░░░ GAME PANEL (BACK) ░░░ -->
+<div id="gm-panel" class="gm-back">
+
+  <!-- CARD CONTENT -->
+  <div id="gm-content">
+    <div id="gm-question" class="gm-block">{{Front}}</div>
+
+    <!-- Seamless answer reveal (pure CSS) -->
+    <div id="gm-back-reveal" class="gm-collapse">
+      <div class="gm-collapse-inner">
+        <div id="gm-answer" class="gm-block">{{Back}}</div>
+      </div>
+    </div>
+
+    <!-- Explanation (only rendered when the field has content) -->
+    {{#Explanation}}
+    <div id="gm-expl-anim-wrap" class="gm-collapse">
+      <div class="gm-collapse-inner">
+        <div id="gm-expl-body" class="gm-block">{{Explanation}}</div>
+      </div>
+    </div>
+    {{/Explanation}}
+  </div>
+
+  <!-- FOOTER: explanation toggle -->
+  <div id="gm-footer">
+    <button id="gm-expl-btn" type="button" aria-controls="gm-expl-anim-wrap" aria-expanded="false" disabled>
+      Explanation <span class="gm-kbd">H</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- EXPLANATION TOGGLE · ANKIDROID USER ACTION · DESKTOP HOTKEY -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── Explanation toggle ──
+     Looks elements up on every call, so it never holds on to a
+     stale card (Anki desktop reuses the same page between cards). */
+  window.gmToggleExplanation = function (force) {
+    var wrap = document.getElementById('gm-expl-anim-wrap');
+    var btn = document.getElementById('gm-expl-btn');
+    if (!wrap) return;
+
+    var open = typeof force === 'boolean' ? force : !wrap.classList.contains('is-open');
+    wrap.classList.toggle('is-open', open);
+    if (btn) {
+      btn.classList.toggle('gm-expl-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    }
+  };
+
+  var btn = document.getElementById('gm-expl-btn');
+  if (btn && document.getElementById('gm-expl-anim-wrap')) {
+    btn.disabled = false;
+    btn.addEventListener('click', function () { window.gmToggleExplanation(); });
+  }
+
+  /* ── AnkiDroid: bind to "User Action 1" ── */
+  window.userJs1 = function () { window.gmToggleExplanation(); };
+
+  /* ── Desktop hotkey: H (registered once per page) ── */
+  if (!window.gmExplHotkeyBound) {
+    window.gmExplHotkeyBound = true;
+    document.addEventListener('keyup', function (e) {
+      var t = e.target;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (e.code === 'KeyH' || e.key === 'h' || e.key === 'H') window.gmToggleExplanation();
+    });
+  }
+}());
+</script>

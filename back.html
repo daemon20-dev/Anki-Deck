@@ -1,19 +1,30 @@
-<!-- ░░░ NIGHT SCENE (decorative background) ░░░ -->
+<!-- Generated from src/ by tools/build.py — edit src/, then rebuild. -->
+<!-- ░░░ NIGHT SCENE ░░░
+     Drawn with inline SVG so it is fully painted on the very first frame
+     (no background images that load a beat later and "pop" in). -->
 <div id="gm-scene" aria-hidden="true">
-  <div class="gm-layer gm-stars"></div>
-  <div class="gm-layer gm-stars gm-stars--near"></div>
+  <div class="gm-layer gm-stars">
+    <svg><defs><pattern id="gm-stars-a" width="420" height="340" patternUnits="userSpaceOnUse"><circle cx="58" cy="287" r="0.9" fill="#cfdcff" fill-opacity="0.51"/><circle cx="319" cy="161" r="0.7" fill="#ffffff" fill-opacity="0.50"/><circle cx="14" cy="283" r="0.7" fill="#ffffff" fill-opacity="0.83"/><circle cx="113" cy="271" r="0.8" fill="#ffffff" fill-opacity="0.95"/><circle cx="15" cy="11" r="0.8" fill="#cfdcff" fill-opacity="0.83"/><circle cx="405" cy="246" r="0.8" fill="#cfdcff" fill-opacity="0.97"/><circle cx="232" cy="118" r="0.8" fill="#cfdcff" fill-opacity="0.97"/><circle cx="387" cy="142" r="1.0" fill="#ffffff" fill-opacity="0.51"/><circle cx="264" cy="245" r="0.6" fill="#ffffff" fill-opacity="0.63"/><circle cx="302" cy="241" r="1.0" fill="#cfdcff" fill-opacity="0.73"/><circle cx="381" cy="66" r="0.6" fill="#cfdcff" fill-opacity="0.92"/><circle cx="212" cy="200" r="0.5" fill="#ffffff" fill-opacity="0.86"/><circle cx="170" cy="225" r="0.7" fill="#ffffff" fill-opacity="0.88"/><circle cx="309" cy="31" r="0.8" fill="#ffffff" fill-opacity="0.88"/><circle cx="219" cy="134" r="0.7" fill="#ffffff" fill-opacity="0.71"/><circle cx="130" cy="287" r="0.8" fill="#ffffff" fill-opacity="0.67"/><circle cx="73" cy="171" r="1.0" fill="#ffffff" fill-opacity="0.75"/><circle cx="360" cy="80" r="0.8" fill="#ffffff" fill-opacity="0.64"/><circle cx="380" cy="223" r="0.8" fill="#ffffff" fill-opacity="0.45"/><circle cx="328" cy="278" r="0.9" fill="#ffffff" fill-opacity="0.73"/><circle cx="56" cy="263" r="0.6" fill="#ffffff" fill-opacity="0.71"/><circle cx="154" cy="188" r="1.0" fill="#cfdcff" fill-opacity="0.72"/><circle cx="150" cy="118" r="0.8" fill="#ffffff" fill-opacity="0.88"/><circle cx="140" cy="204" r="0.9" fill="#ffffff" fill-opacity="0.55"/><circle cx="245" cy="291" r="0.9" fill="#cfdcff" fill-opacity="0.47"/><circle cx="395" cy="26" r="0.9" fill="#cfdcff" fill-opacity="0.46"/></pattern></defs><rect width="100%" height="100%" fill="url(#gm-stars-a)"/></svg>
+  </div>
+  <div class="gm-layer gm-stars gm-stars--near">
+    <svg><defs><pattern id="gm-stars-b" x="130" y="70" width="560" height="460" patternUnits="userSpaceOnUse"><circle cx="182" cy="71" r="1.3" fill="#ffffff" fill-opacity="0.90"/><circle cx="54" cy="268" r="1.4" fill="#ffffff" fill-opacity="0.47"/><circle cx="243" cy="34" r="1.0" fill="#ffe2c0" fill-opacity="0.48"/><circle cx="316" cy="434" r="1.3" fill="#dfe8ff" fill-opacity="0.97"/><circle cx="323" cy="183" r="1.5" fill="#ffffff" fill-opacity="0.76"/><circle cx="76" cy="193" r="1.2" fill="#dfe8ff" fill-opacity="0.62"/><circle cx="456" cy="84" r="1.2" fill="#dfe8ff" fill-opacity="0.55"/><circle cx="56" cy="327" r="1.2" fill="#dfe8ff" fill-opacity="0.56"/><circle cx="380" cy="197" r="1.1" fill="#dfe8ff" fill-opacity="0.96"/><circle cx="203" cy="115" r="1.0" fill="#ffffff" fill-opacity="0.50"/><circle cx="169" cy="228" r="1.1" fill="#ffe2c0" fill-opacity="0.61"/><circle cx="547" cy="56" r="1.2" fill="#ffe2c0" fill-opacity="0.53"/><circle cx="274" cy="20" r="1.3" fill="#dfe8ff" fill-opacity="0.77"/><circle cx="489" cy="145" r="1.3" fill="#dfe8ff" fill-opacity="0.72"/></pattern></defs><rect width="100%" height="100%" fill="url(#gm-stars-b)"/></svg>
+  </div>
   <div class="gm-layer">
     <span class="gm-sparkle"></span><span class="gm-sparkle"></span>
     <span class="gm-sparkle"></span><span class="gm-sparkle"></span>
   </div>
   <div class="gm-moon"></div>
   <div class="gm-shooting"></div>
-  <div class="gm-clouds gm-clouds--high"></div>
-  <div class="gm-clouds gm-clouds--low"></div>
-  <div class="gm-layer gm-hills gm-hills--far"></div>
-  <div class="gm-layer gm-hills gm-hills--mid"></div>
+  <div class="gm-clouds gm-clouds--high">
+    <svg><defs><linearGradient id="gm-cg-hi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d4ff" stop-opacity="0.2"/><stop offset=".55" stop-color="#4e5c9c" stop-opacity="0.1"/><stop offset="1" stop-color="#141c44" stop-opacity="0.16"/></linearGradient><filter id="gm-cb-hi" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="2"/></filter><pattern id="gm-clouds-hi" width="1600" height="170" patternUnits="userSpaceOnUse"><g fill="url(#gm-cg-hi)" filter="url(#gm-cb-hi)"><path d="M90 120 A30 30 0 0 1 133 98 A38 38 0 0 1 177 76 A46 46 0 0 1 220 62 A34 34 0 0 1 263 70 A26 26 0 0 1 307 86 A28 28 0 0 1 350 120 Q220 127 90 120Z"/><path d="M640 90 A28 28 0 0 1 689 72 A40 40 0 0 1 737 52 A52 52 0 0 1 786 34 A44 44 0 0 1 834 26 A36 36 0 0 1 883 42 A30 30 0 0 1 931 58 A30 30 0 0 1 980 90 Q810 97 640 90Z"/><path d="M1180 128 A25 25 0 0 1 1224 108 A34 34 0 0 1 1268 88 A40 40 0 0 1 1312 82 A30 30 0 0 1 1356 98 A27 27 0 0 1 1400 128 Q1290 135 1180 128Z"/></g></pattern></defs><rect width="100%" height="100%" fill="url(#gm-clouds-hi)"/></svg>
+  </div>
+  <div class="gm-clouds gm-clouds--low">
+    <svg><defs><linearGradient id="gm-cg-lo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9d4ff" stop-opacity="0.13"/><stop offset=".55" stop-color="#4e5c9c" stop-opacity="0.07"/><stop offset="1" stop-color="#141c44" stop-opacity="0.12"/></linearGradient><filter id="gm-cb-lo" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter><pattern id="gm-clouds-lo" width="1600" height="150" patternUnits="userSpaceOnUse"><g fill="url(#gm-cg-lo)" filter="url(#gm-cb-lo)"><path d="M300 110 A27 27 0 0 1 350 92 A36 36 0 0 1 400 74 A44 44 0 0 1 450 62 A36 36 0 0 1 500 70 A28 28 0 0 1 550 84 A29 29 0 0 1 600 110 Q450 117 300 110Z"/><path d="M980 96 A22 22 0 0 1 1020 80 A32 32 0 0 1 1060 64 A36 36 0 0 1 1100 56 A26 26 0 0 1 1140 70 A24 24 0 0 1 1180 96 Q1080 103 980 96Z"/><path d="M1400 120 A22 22 0 0 1 1440 106 A28 28 0 0 1 1480 90 A30 30 0 0 1 1520 94 A24 24 0 0 1 1560 120 Q1480 127 1400 120Z"/></g></pattern></defs><rect width="100%" height="100%" fill="url(#gm-clouds-lo)"/></svg>
+  </div>
+  <div class="gm-layer gm-hills gm-hills--far"><svg viewBox="0 0 1440 400" preserveAspectRatio="xMidYMax slice"><linearGradient id="gm-hf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141c40"/><stop offset="1" stop-color="#0b1128"/></linearGradient><path d="M0 240 C180 190 320 160 480 190 C640 220 760 140 940 128 C1120 116 1260 180 1440 160 L1440 400 L0 400Z" fill="url(#gm-hf)"/><path d="M0 240 C180 190 320 160 480 190 C640 220 760 140 940 128 C1120 116 1260 180 1440 160" fill="none" stroke="#ffc08a" stroke-opacity=".12" stroke-width="1.5"/></svg></div>
+  <div class="gm-layer gm-hills gm-hills--mid"><svg viewBox="0 0 1440 400" preserveAspectRatio="xMidYMax slice"><linearGradient id="gm-hm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1736"/><stop offset="1" stop-color="#070c22"/></linearGradient><path d="M0 290 C160 250 300 236 460 266 C620 296 720 236 900 226 C1080 216 1240 276 1440 256 L1440 400 L0 400Z" fill="url(#gm-hm)"/><path d="M0 290 C160 250 300 236 460 266 C620 296 720 236 900 226 C1080 216 1240 276 1440 256" fill="none" stroke="#ffb06e" stroke-opacity=".10" stroke-width="1.5"/></svg></div>
   <div class="gm-layer gm-mist"></div>
-  <div class="gm-layer gm-hills gm-hills--near"></div>
+  <div class="gm-layer gm-hills gm-hills--near"><svg viewBox="0 0 1440 400" preserveAspectRatio="xMidYMax slice"><defs><radialGradient id="gm-hw"><stop offset="0" stop-color="#ffb35c" stop-opacity=".5"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient></defs><path d="M0 340 C200 300 360 320 520 340 C700 362 860 300 1060 310 C1220 318 1340 350 1440 340 L1440 400 L0 400Z" fill="#05081a"/><path d="M0 340 C200 300 360 320 520 340 C700 362 860 300 1060 310 C1220 318 1340 350 1440 340" fill="none" stroke="#ffa860" stroke-opacity=".09" stroke-width="1.5"/><path fill="#05081a" d="M70 287 L81 312 L76 312 L89 333 L51 333 L64 312 L59 312Z M108 264 L123 299 L116 299 L135 328 L81 328 L100 299 L93 299Z M146 286 L155 308 L151 308 L163 326 L129 326 L141 308 L137 308Z M560 308 L569 329 L565 329 L576 346 L544 346 L555 329 L551 329Z M600 288 L613 319 L607 319 L624 344 L576 344 L593 319 L587 319Z M1290 284 L1302 312 L1296 312 L1311 334 L1269 334 L1284 312 L1278 312Z M1330 268 L1346 306 L1339 306 L1359 338 L1301 338 L1321 306 L1314 306Z M1372 296 L1382 320 L1378 320 L1390 340 L1354 340 L1366 320 L1362 320Z M1410 283 L1423 315 L1417 315 L1434 341 L1386 341 L1403 315 L1397 315Z M880 314 L880 290 L874 292 L898 272 L922 292 L916 290 L916 314Z M906 282 L906 270 L912 270 L912 287Z"/><circle cx="897" cy="300" r="30" fill="url(#gm-hw)"></circle><rect x="891" y="295" width="12" height="9" rx="1" fill="#ffc27a"/><path d="M897 295 V304 M891 299.5 H903" stroke="#05081a" stroke-width="1.2"/></svg></div>
   <div class="gm-layer gm-fireflies">
     <span class="gm-firefly"></span><span class="gm-firefly"></span><span class="gm-firefly"></span>
     <span class="gm-firefly"></span><span class="gm-firefly"></span><span class="gm-firefly"></span>
@@ -21,6 +32,28 @@
   </div>
   <div class="gm-layer gm-vignette"></div>
 </div>
+<script>
+(function () {
+  /* ── One living background ──
+     Runs right after the scene markup, before the first paint.
+     • Anki desktop swaps the card HTML on every flip / card. The first
+       scene is moved out to <body> and reused, so it is never rebuilt:
+       only the card in the middle changes.
+     • Clients that reload the whole page (AnkiDroid) get a scene whose
+       animations are offset by the wall clock, so every layer resumes
+       exactly where the previous page left it. */
+  var live = document.querySelector('.gm-scene-live');
+  var fresh = document.querySelector('#gm-scene:not(.gm-scene-live)');
+  if (!fresh) return;
+  if (live) {
+    fresh.parentNode.removeChild(fresh);
+    return;
+  }
+  fresh.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
+  fresh.classList.add('gm-scene-live');
+  document.body.insertBefore(fresh, document.body.firstChild);
+}());
+</script>
 
 <!-- ░░░ GAME PANEL (BACK) ░░░ -->
 <div id="gm-panel" class="gm-back">
@@ -59,22 +92,6 @@
 <script>
 (function () {
   'use strict';
-
-  /* ── Persistent background ──
-     Anki swaps the card HTML on every flip. Moving the first scene out
-     of the card container (to <body>) means it is never torn down, so
-     the sky never restarts or jumps between front, back and next card.
-     Fresh copies from later renders are simply discarded. */
-  var live = document.querySelector('.gm-scene-live');
-  var fresh = document.querySelector('#gm-scene:not(.gm-scene-live)');
-  if (live) {
-    if (fresh) fresh.parentNode.removeChild(fresh);
-  } else if (fresh) {
-    // Shared clock: keeps phase consistent on clients that reload the page per side.
-    fresh.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
-    fresh.classList.add('gm-scene-live');
-    document.body.insertBefore(fresh, document.body.firstChild);
-  }
 
   /* ── Explanation toggle ──
      Looks elements up on every call, so it never holds on to a

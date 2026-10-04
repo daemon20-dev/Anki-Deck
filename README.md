@@ -24,9 +24,11 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 
 ## Features
 
-- **Smooth flips** — the background is created once and kept alive across sides and
-  cards (it is never re-rendered, so it never restarts), and the card is top-anchored
-  so the question stays perfectly still while the answer slides open beneath it.
+- **Smooth, lightweight transitions** — the background is drawn once and kept alive
+  across sides and cards, so only the card in the middle changes. The scene is inline
+  SVG (fully painted on the first frame, nothing pops in), uses system fonts (no
+  network font reflow), and every moving layer only animates `transform`/`opacity`
+  on the GPU — an idle card does no repainting at all.
 - **Answer reveal** slides open with pure CSS (no height measuring in JS).
 - **Explanation drawer** — click the button, press **H** on desktop, or bind
   AnkiDroid's *User Action 1* (`userJs1`). The button is disabled when the card has no
@@ -47,6 +49,15 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 - Duplicate `{{^Explanation}}` button branch removed; one footer button for every card.
 - All colours, radii and shadows are CSS custom properties at the top of `styling.css`
   — tweak the palette in one place.
+
+## Editing the templates
+
+`front.html` and `back.html` are generated. Edit the files in `src/` (the night scene
+lives once in `src/scene.html`), then run:
+
+```sh
+python3 tools/build.py
+```
 
 ## Local preview
 
