@@ -30,9 +30,10 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
   SVG (fully painted on the first frame, nothing pops in), uses system fonts (no
   network font reflow), and every moving layer only animates `transform`/`opacity`
   on the GPU — an idle card does no repainting at all.
-- **Centred card, steady question** — the card is vertically centred by its front-side
-  height on both sides, so on flip the question stays put and the answer slides open
-  below it (pure CSS reveal). The card sits on its own GPU layer so text never shimmers.
+- **Always centred** — the card is centred on its current height and re-centres on
+  every frame its size changes, so when the answer or explanation opens it grows evenly
+  up and down from the middle of the screen (taller-than-screen cards scroll). The card
+  sits on its own GPU layer so text never shimmers.
 - **Explanation drawer** — click the button, press **H** on desktop, or bind
   AnkiDroid's *User Action 1* (`userJs1`). The button is disabled when the card has no
   explanation, and appears (disabled) on the front so the layout never shifts.
