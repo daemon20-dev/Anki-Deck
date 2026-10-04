@@ -192,22 +192,50 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
   aspect-ratio: 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 34% 38%, rgba(200, 180, 160, 0.30) 0 9%, transparent 10%),
-    radial-gradient(circle at 62% 64%, rgba(200, 180, 160, 0.24) 0 7%, transparent 8%),
-    radial-gradient(circle at 66% 30%, rgba(200, 180, 160, 0.20) 0 5%, transparent 6%),
-    radial-gradient(circle at 38% 34%, #fbf7ee 0%, #efe6d6 45%, #d9c3a3 100%);
+    /* maria — the soft grey "seas" */
+    radial-gradient(ellipse 24% 19% at 34% 38%, rgba(140, 130, 128, 0.30), transparent 72%),
+    radial-gradient(ellipse 17% 13% at 57% 28%, rgba(140, 130, 128, 0.24), transparent 72%),
+    radial-gradient(ellipse 28% 16% at 56% 60%, rgba(140, 130, 128, 0.26), transparent 72%),
+    radial-gradient(ellipse 12% 16% at 26% 64%, rgba(140, 130, 128, 0.18), transparent 72%),
+    /* a few soft craters */
+    radial-gradient(circle at 70% 46%, rgba(130, 118, 110, 0.22) 0 3%, transparent 5.5%),
+    radial-gradient(circle at 44% 18%, rgba(130, 118, 110, 0.18) 0 2.5%, transparent 4.5%),
+    radial-gradient(circle at 38% 80%, rgba(130, 118, 110, 0.16) 0 2.2%, transparent 4%),
+    radial-gradient(circle at 22% 44%, rgba(130, 118, 110, 0.14) 0 1.8%, transparent 3.5%),
+    /* surface, brighter toward the upper-left */
+    radial-gradient(circle at 38% 34%, #fffbf3 0%, #f3ebdc 48%, #e2d2b8 82%, #cdb898 100%);
   box-shadow:
-    inset -10px -8px 18px rgba(230, 170, 120, 0.30),
-    0 0 30px 4px rgba(255, 226, 190, 0.22),
-    0 0 110px 24px rgba(255, 170, 110, 0.07);
+    inset -10px -9px 20px rgba(90, 80, 110, 0.30),   /* soft terminator shading, blue-tinted */
+    inset 3px 3px 8px rgba(255, 255, 255, 0.45),     /* bright limb */
+    0 0 24px 3px rgba(255, 236, 210, 0.25),
+    0 0 90px 20px rgba(255, 190, 140, 0.07);
+}
+/* Faint lunar halo ring */
+.gm-moon::before {
+  content: '';
+  position: absolute;
+  inset: -55%;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 50%, rgba(214, 222, 255, 0.025) 60%, rgba(255, 230, 205, 0.02) 66%, transparent 74%);
 }
 .gm-moon::after {
   content: '';
   position: absolute;
   inset: -60%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 226, 190, 0.10) 30%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 228, 196, 0.09) 0%, rgba(255, 228, 196, 0.04) 35%, transparent 68%);
   animation: gm-moon-glow 8s ease-in-out infinite alternate;
+}
+
+/* ── Moon glints on the lake: two sets that fade in turn (opacity only) ── */
+.gm-glints {
+  will-change: opacity;
+  animation: gm-glint 3.6s ease-in-out infinite alternate;
+}
+.gm-glints--alt { --d: 1.8s; }
+@keyframes gm-glint {
+  from { opacity: 0.25; }
+  to   { opacity: 1; }
 }
 
 /* ── Clouds (seamless horizontal loop) ── */
@@ -417,7 +445,10 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
   font-size: 0.93em;
   line-height: 1.8;
   color: var(--ink-3);
-  text-align: left;
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+          hyphens: auto;
 }
 
 #gm-question b, #gm-answer b, #gm-expl-body b,
