@@ -1,0 +1,40 @@
+<script>
+(function () {
+  /* ── Vertical centring that never moves the question ──
+     The card is centred using its *front-side* height (question + footer),
+     on both sides. The back then opens the answer below a question that
+     sits exactly where it was. Runs before first paint. */
+  window.gmPlaceCard = function () {
+    var panel = document.getElementById('gm-panel');
+    var q = document.getElementById('gm-question');
+    var footer = document.getElementById('gm-footer');
+    if (!panel || !q || !footer) return;
+
+    var ps = getComputedStyle(panel);
+    var px = function (v) { return parseFloat(v) || 0; };
+    var frontHeight =
+      px(ps.paddingTop) + px(ps.paddingBottom) +
+      px(ps.borderTopWidth) + px(ps.borderBottomWidth) +
+      q.offsetHeight + footer.offsetHeight + px(getComputedStyle(footer).marginTop);
+
+    // Untransformed page position of the panel (ignores entrance animation).
+    var top = 0;
+    for (var el = panel; el; el = el.offsetParent) top += el.offsetTop;
+
+    var target = Math.max(16, Math.round((window.innerHeight - frontHeight) / 2));
+    panel.style.marginTop = (px(ps.marginTop) + target - top) + 'px';
+  };
+
+  window.gmPlaceCard();
+
+  // Re-centre when question images finish loading or the window resizes.
+  var imgs = document.querySelectorAll('#gm-question img');
+  for (var i = 0; i < imgs.length; i++) {
+    if (!imgs[i].complete) imgs[i].addEventListener('load', window.gmPlaceCard);
+  }
+  if (!window.gmPlaceBound) {
+    window.gmPlaceBound = true;
+    window.addEventListener('resize', function () { window.gmPlaceCard(); });
+  }
+}());
+</script>

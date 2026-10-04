@@ -1,7 +1,8 @@
 # Moonlit Hills — Anki card theme
 
-A modern, sleek Anki note type styling: a frosted-glass card floating over a subtle,
-**looping night scene** — rolling hills, pines, a cabin with a flickering warm window,
+A modern, sleek Anki note type styling: a dark glass card floating over a subtle,
+**looping night scene** — moonlit mountains, layered hills fading into mist, a still
+lake reflecting the moon, pine treelines, a cabin with a warm window,
 a soft moon, faint twinkling stars, drifting cumulus clouds and mist, fireflies and the
 occasional shooting star.
 
@@ -29,7 +30,9 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
   SVG (fully painted on the first frame, nothing pops in), uses system fonts (no
   network font reflow), and every moving layer only animates `transform`/`opacity`
   on the GPU — an idle card does no repainting at all.
-- **Answer reveal** slides open with pure CSS (no height measuring in JS).
+- **Centred card, steady question** — the card is vertically centred by its front-side
+  height on both sides, so on flip the question stays put and the answer slides open
+  below it (pure CSS reveal). The card sits on its own GPU layer so text never shimmers.
 - **Explanation drawer** — click the button, press **H** on desktop, or bind
   AnkiDroid's *User Action 1* (`userJs1`). The button is disabled when the card has no
   explanation, and appears (disabled) on the front so the layout never shifts.
@@ -53,9 +56,10 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 ## Editing the templates
 
 `front.html` and `back.html` are generated. Edit the files in `src/` (the night scene
-lives once in `src/scene.html`), then run:
+lives once in `src/scene.html`, card centring in `src/place.html`), then run:
 
 ```sh
+python3 tools/gen_hills.py   # only if you changed the landscape generator
 python3 tools/build.py
 ```
 
