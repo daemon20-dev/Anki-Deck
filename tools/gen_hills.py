@@ -142,7 +142,8 @@ back = (
 
 # ── Moon glints on the water (two interleaved sets that fade in turn) ───
 def glints(seed):
-    """Broken, uneven sparkle dashes that widen and fade away from the shore."""
+    """Stylised moon path: rounded bars stacked under the moon, long near the
+    far shore and breaking into shorter, fainter pieces as they come closer."""
     rnd, out = seed, []
 
     def rand():
@@ -150,16 +151,50 @@ def glints(seed):
         rnd = (rnd * 1103515245 + 12345) % 2**31
         return (rnd >> 8) % 1000 / 1000
 
-    for i in range(11):
-        y = lake_y - 10 + i * 2.7
-        half = 5 + i * 3.4                              # the column widens with distance
-        op = 0.6 - i * 0.045
-        for _ in range(1 + int(rand() * 3)):            # 1–3 dashes per row
-            w = 2 + rand() * (4 + i * 1.6)
-            x = REFLECT_X + (rand() * 2 - 1) * half - w / 2
-            out.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height=".9" rx=".45" '
-                       f'fill="#ffeeda" fill-opacity="{op * (0.6 + rand() * 0.4):.2f}"/>')
-    return "".join(out)
+    for i in range(10):
+        y = lake_y - 11 + i * 4.2
+        half = 10 + i * 5                              # the path widens toward the viewer
+        op = 0.85 - i * 0.06
+        pieces = 1 if i < 2 else 2 + int(rand() * 2)   # solid at the top, broken lower down
+        for k in range(pieces):
+            w = (34 - i * 1.5) * (0.5 + rand() * 0.6) if pieces > 1 else 44 - i * 8
+            x = REFLECT_X + (rand() * 2 - 1) * half * (0.3 if pieces == 1 else 1) - w / 2
+            out.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="2.4" rx="1.2" '
+                       f'fill="url(#gm-g-glint)" fill-opacity="{op * (0.7 + rand() * 0.3):.2f}"/>')
+    return ('<defs><linearGradient id="gm-g-glint"><stop offset="0" stop-color="#ffe7cc" stop-opacity=".2"/>'
+            '<stop offset=".5" stop-color="#fff4e6"/><stop offset="1" stop-color="#ffe7cc" stop-opacity=".2"/></linearGradient></defs>'
+            + "".join(out))
+
+
+def couple(x, base):
+    """A man and a shorter woman walking left (toward the cabin), hand in hand."""
+    ink = "#04071a"
+    limb = f'stroke="{ink}" stroke-linecap="round" fill="none"'
+    man = (
+        f'<g transform="translate({x} {base}) scale(1.05)">'
+        f'<circle cx="-.6" cy="-25" r="2.7" fill="{ink}"/>'
+        f'<path d="M-3.4 -21.4 Q0 -22.6 2.8 -21.2 L2.4 -12.6 L-2.6 -12.6Z" fill="{ink}"/>'      # torso
+        f'<path d="M-1.4 -13 L-4.6 -6.5 L-5.2 0 M1.2 -13 L2.2 -6.5 L4.4 -.4" {limb} stroke-width="2.3"/>'  # legs, mid-stride
+        f'<path d="M-2.6 -20.4 L-5.6 -16 L-8.6 -12.8 M2 -20.4 L3.6 -16.4 L4.6 -13.6" {limb} stroke-width="1.7"/>'  # arms
+        '</g>'
+    )
+    woman = (
+        f'<g transform="translate({x - 16} {base}) scale(.94)">'
+        f'<circle cx="-.4" cy="-23.6" r="2.5" fill="{ink}"/>'
+        f'<path d="M1.4 -25.4 Q4.4 -24 3.6 -19.6 Q2.2 -21 1.6 -22.4Z" fill="{ink}"/>'         # hair falling back
+        f'<path d="M-2.4 -19.8 Q0 -20.8 2.4 -19.6 L1.8 -15.4 L5.2 -7 L-5.2 -7 L-1.8 -15.4Z" fill="{ink}"/>'  # A-line dress
+        f'<path d="M-1.4 -7.5 L-3.6 -.4 M1.4 -7.5 L3 -.2" {limb} stroke-width="1.8"/>'          # legs
+        f'<path d="M-2 -18.6 L-4.4 -12.8 M2 -18.6 L5.2 -15 L7.6 -12.4" {limb} stroke-width="1.5"/>'  # arms (right one reaches back)
+        '</g>'
+    )
+    # joined hands where his forward arm meets her trailing arm
+    hands = f'<circle cx="{x - 8.9:.1f}" cy="{base - 12.6:.1f}" r="1.6" fill="{ink}"/>'
+    people = man + woman + hands
+    # faint moonlit rim (a soft pale copy behind the silhouette) so the pair
+    # reads against the dark hill
+    rim = (f'<g transform="translate(1.2 -.8)" opacity=".28" filter="url(#gm-f-rim)">'
+           + people.replace(ink, "#b9c6f0") + '</g>')
+    return rim + people
 
 
 # ── Near group: foreground hill, dense pines, cabin ──────────────────────
@@ -174,15 +209,17 @@ cabin = (
     f'<path d="M{cab_x - 5} {cab_y - 13} V{cab_y - 4} M{cab_x - 11} {cab_y - 8.5} H{cab_x + 1}" stroke="#04071a" stroke-width="1.2"/>'
 )
 front = (
-    '<defs><radialGradient id="gm-g-win"><stop offset="0" stop-color="#ffb35c" stop-opacity=".45"/>'
+    '<defs><filter id="gm-f-rim" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation=".7"/></filter>'
+    '<radialGradient id="gm-g-win"><stop offset="0" stop-color="#ffb35c" stop-opacity=".45"/>'
     '<stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/></radialGradient></defs>'
     + hill(near, "#04071a", "#c9d4ff", 0.07)
     + contour(near, 260, 520, 22, 0.05) + contour(near, 960, 1200, 20, 0.04)
     # a faint footpath winding down from the cabin
     + f'<path d="M{cab_x + 6} {cab_y + 6} C{cab_x + 30} {cab_y + 20} {cab_x - 40} {cab_y + 30} {cab_x - 10} {H}" '
       f'fill="none" stroke="#8d9bd6" stroke-opacity=".03" stroke-width="4" stroke-linecap="round"/>'
-    + f'<path fill="#04071a" d="{shrubs(near, [(300, 7), (338, 5), (690, 6), (760, 4), (900, 6), (1010, 5), (1120, 7)])}"/>'
-    + f'<path fill="#04071a" d="{treeline(near, [(0, 260, 12, 66), (440, 650, 7, 48), (870, 960, 3, 38), (1240, 1440, 10, 72)], 3)}"/>'
+    + f'<path fill="#04071a" d="{shrubs(near, [(300, 7), (338, 5), (690, 6), (760, 4), (1010, 5), (1120, 7)])}"/>'
+    + f'<path fill="#04071a" d="{treeline(near, [(0, 260, 12, 66), (440, 650, 7, 48), (980, 1060, 3, 38), (1240, 1440, 10, 72)], 3)}"/>'
+    + couple(918, near(918) + 1.5)
     + cabin
 )
 

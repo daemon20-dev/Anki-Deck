@@ -258,6 +258,51 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
   animation-duration: 110s;
 }
 
+/* ── Birds ──
+   Each flock glides across the screen (transform only); each bird flaps
+   by squashing vertically. Pale, moonlit silhouettes so they read on
+   the dark sky as well as over the hills. */
+.gm-flock {
+  position: absolute;
+  left: 0;
+  width: 120px;
+  height: 60px;
+  will-change: transform;
+  animation: gm-fly-right 75s linear infinite;
+}
+.gm-flock--high { top: 20%; }
+.gm-flock--low  { top: 47%; --d: 38s; animation-name: gm-fly-left; animation-duration: 95s; transform: scale(.8); }
+
+.gm-bird {
+  position: absolute;
+  width: 18px;
+  height: 8px;
+  will-change: transform;
+  animation: gm-flap 0.9s ease-in-out infinite alternate;
+}
+.gm-bird svg { fill: rgba(196, 206, 240, 0.55); }
+.gm-flock--low .gm-bird svg { fill: rgba(160, 172, 215, 0.45); }
+
+.gm-bird:nth-child(1) { left: 0;    top: 18px; --d: 0s; }
+.gm-bird:nth-child(2) { left: 22px; top: 6px;  --d: 0.35s; width: 14px; }
+.gm-bird:nth-child(3) { left: 40px; top: 24px; --d: 0.6s;  width: 16px; }
+.gm-bird:nth-child(4) { left: 62px; top: 12px; --d: 0.2s;  width: 13px; }
+
+@keyframes gm-fly-right {
+  0%   { transform: translate3d(-15vw, 0, 0); }
+  50%  { transform: translate3d(50vw, -18px, 0); }
+  100% { transform: translate3d(115vw, 6px, 0); }
+}
+@keyframes gm-fly-left {
+  0%   { transform: translate3d(115vw, 0, 0) scale(-.8, .8); }
+  50%  { transform: translate3d(50vw, 12px, 0) scale(-.8, .8); }
+  100% { transform: translate3d(-15vw, -8px, 0) scale(-.8, .8); }
+}
+@keyframes gm-flap {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(0.35) translateY(1px); }
+}
+
 /* ── Shooting star ── */
 .gm-shooting {
   position: absolute;
