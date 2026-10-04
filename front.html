@@ -43,11 +43,20 @@
 (function () {
   'use strict';
 
-  /* Sync the background animations to a shared clock so the sky
-     continues smoothly between front and back instead of restarting. */
-  var scene = document.getElementById('gm-scene');
-  if (scene) {
-    scene.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
+  /* ── Persistent background ──
+     Anki swaps the card HTML on every flip. Moving the first scene out
+     of the card container (to <body>) means it is never torn down, so
+     the sky never restarts or jumps between front, back and next card.
+     Fresh copies from later renders are simply discarded. */
+  var live = document.querySelector('.gm-scene-live');
+  var fresh = document.querySelector('#gm-scene:not(.gm-scene-live)');
+  if (live) {
+    if (fresh) fresh.parentNode.removeChild(fresh);
+  } else if (fresh) {
+    // Shared clock: keeps phase consistent on clients that reload the page per side.
+    fresh.style.setProperty('--gm-clock', -((Date.now() / 1000) % 86400).toFixed(2) + 's');
+    fresh.classList.add('gm-scene-live');
+    document.body.insertBefore(fresh, document.body.firstChild);
   }
 }());
 </script>

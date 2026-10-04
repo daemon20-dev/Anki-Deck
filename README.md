@@ -24,8 +24,9 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 
 ## Features
 
-- **Seamless background** — every scene animation runs off one shared clock, so the
-  sky keeps moving smoothly when the card flips instead of restarting.
+- **Smooth flips** — the background is created once and kept alive across sides and
+  cards (it is never re-rendered, so it never restarts), and the card is top-anchored
+  so the question stays perfectly still while the answer slides open beneath it.
 - **Answer reveal** slides open with pure CSS (no height measuring in JS).
 - **Explanation drawer** — click the button, press **H** on desktop, or bind
   AnkiDroid's *User Action 1* (`userJs1`). The button is disabled when the card has no
