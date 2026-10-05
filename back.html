@@ -107,15 +107,16 @@
 
 <script>
 (function () {
-  /* Lift the stage straight under <body>. A position:fixed box is only
-     centred on the screen if no ancestor has a transform / filter / zoom;
-     some Anki clients put those on their card containers, which pinned
-     the card to the top. Older stages from previous cards are removed. */
-  var stages = document.querySelectorAll('#gm-stage');
-  var stage = stages[stages.length - 1];
-  if (!stage) return;
-  for (var i = 0; i < stages.length - 1; i++) stages[i].parentNode.removeChild(stages[i]);
-  if (stage.parentNode !== document.body) document.body.appendChild(stage);
+  /* Keep exactly one card on screen: this template's own stage (the
+     element just before this script). Any other #gm-stage — e.g. one
+     left in <body> by an earlier version of this template — is removed,
+     so no "ghost" copy of a previous card can show through. */
+  var me = document.currentScript && document.currentScript.previousElementSibling;
+  if (!me || me.id !== 'gm-stage') return;
+  var all = document.querySelectorAll('#gm-stage');
+  for (var i = 0; i < all.length; i++) {
+    if (all[i] !== me) all[i].parentNode.removeChild(all[i]);
+  }
 }());
 </script>
 
