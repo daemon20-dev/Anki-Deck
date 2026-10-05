@@ -105,6 +105,20 @@
 </div>
 </div>
 
+<script>
+(function () {
+  /* Lift the stage straight under <body>. A position:fixed box is only
+     centred on the screen if no ancestor has a transform / filter / zoom;
+     some Anki clients put those on their card containers, which pinned
+     the card to the top. Older stages from previous cards are removed. */
+  var stages = document.querySelectorAll('#gm-stage');
+  var stage = stages[stages.length - 1];
+  if (!stage) return;
+  for (var i = 0; i < stages.length - 1; i++) stages[i].parentNode.removeChild(stages[i]);
+  if (stage.parentNode !== document.body) document.body.appendChild(stage);
+}());
+</script>
+
 
 <!-- EXPLANATION TOGGLE · ANKIDROID USER ACTION · DESKTOP HOTKEY -->
 <script>
