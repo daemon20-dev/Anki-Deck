@@ -124,13 +124,6 @@ back = (
     + f'<path d="M560 {lake_y + 16} C680 {lake_y - 6} 860 {lake_y - 13} 1060 {lake_y - 13} '
       f'C1260 {lake_y - 13} 1380 {lake_y - 10} {W} {lake_y - 8} V{H} H560Z" fill="url(#gm-g-lake)"/>'
     + f'<path d="M640 {lake_y + 3} C800 {lake_y - 11} 1100 {lake_y - 13} {W} {lake_y - 8}" fill="none" stroke="#c9d4ff" stroke-opacity=".10" stroke-width="1"/>'
-    # mirrored shore: the mid hills' dark reflection just below the waterline
-    + f'<path d="M560 {lake_y + 16} C680 {lake_y - 6} 860 {lake_y - 13} 1060 {lake_y - 13} '
-      f'C1260 {lake_y - 13} 1380 {lake_y - 10} {W} {lake_y - 8} V{lake_y + 2} '
-      f'C1300 {lake_y + 4} 1100 {lake_y - 2} 900 {lake_y} C760 {lake_y + 2} 660 {lake_y + 10} 560 {lake_y + 16}Z" '
-      f'fill="#0a1029" fill-opacity=".55"/>'
-    # moon column: a soft vertical glow on the water under the moon
-    + f'<ellipse cx="{REFLECT_X}" cy="{lake_y + 14}" rx="34" ry="22" fill="url(#gm-g-glow)"/>'
     # gentle ripples across the lake (thin, long, very faint)
     + ''.join(
         f'<path d="M{x0} {y} Q{(x0 + x1) / 2:.0f} {y - 1.2} {x1} {y}" stroke="#aebbf0" stroke-opacity="{op}" stroke-width=".8" fill="none" stroke-linecap="round"/>'
@@ -227,8 +220,6 @@ VB = f'viewBox="0 0 {W} {H}" preserveAspectRatio="xMidYMax slice"'
 block = (
     "<!-- hills -->\n"
     f'  <div class="gm-layer gm-hills gm-hills--back"><svg {VB}>{back}</svg></div>\n'
-    f'  <div class="gm-layer gm-hills gm-glints"><svg {VB}>{glints(5)}</svg></div>\n'
-    f'  <div class="gm-layer gm-hills gm-glints gm-glints--alt"><svg {VB}>{glints(29)}</svg></div>\n'
     '  <div class="gm-layer gm-mist"></div>\n'
     f'  <div class="gm-layer gm-hills gm-hills--near"><svg {VB}>{front}</svg></div>\n'
     "  <!-- /hills -->\n"

@@ -57,7 +57,7 @@ The note type needs the fields **Front**, **Back** and **Explanation**.
 ## Editing the templates
 
 `front.html` and `back.html` are generated. Edit the files in `src/` (the night scene
-lives once in `src/scene.html`, card centring in `src/place.html`), then run:
+lives once in `src/scene.html`, card centring is pure CSS (`#gm-stage`)), then run:
 
 ```sh
 python3 tools/gen_hills.py   # only if you changed the landscape generator

@@ -69,11 +69,8 @@ html {
 }
 ::-webkit-scrollbar { width: 0; height: 0; }
 
-/* Page layout is set on plain `body`, not `.card`: Anki desktop only adds
-   the .card class *after* the template script has run, so layout that
-   depended on it made the centring measurement wrong on the first card.
-   The body is a simple block; the card is centred horizontally with
-   auto margins and vertically by src/place.html. */
+/* Neutralise each Anki client's page layout; the card itself is
+   positioned by #gm-stage below. */
 body {
   position: relative !important;
   display: block !important;
@@ -99,6 +96,24 @@ body {
 
 /* Anki desktop briefly hides #qa while it swaps the card HTML. The card
    handles its own entrance, so keep #qa visible to avoid a text blink. */
+/* The stage is a fixed, full-viewport scroll box. Being fixed, it is
+   independent of how each Anki client wraps the card (desktop #qa,
+   AnkiDroid/AnkiMobile containers), and flex auto-margins keep the
+   card centred at every height — even while the answer animates open —
+   while taller cards simply scroll. */
+#gm-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
 #qa { opacity: 1 !important; transition: none !important; }
 
 img { max-width: 100%; height: auto; border-radius: 10px; }
@@ -225,17 +240,6 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 228, 196, 0.09) 0%, rgba(255, 228, 196, 0.04) 35%, transparent 68%);
   animation: gm-moon-glow 8s ease-in-out infinite alternate;
-}
-
-/* ── Moon glints on the lake: two sets that fade in turn (opacity only) ── */
-.gm-glints {
-  will-change: opacity;
-  animation: gm-glint 3.6s ease-in-out infinite alternate;
-}
-.gm-glints--alt { --d: 1.8s; }
-@keyframes gm-glint {
-  from { opacity: 0.25; }
-  to   { opacity: 1; }
 }
 
 /* ── Clouds (seamless horizontal loop) ── */
@@ -414,9 +418,8 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   max-width: 680px;
-  /* Vertical position is set by src/place.html; this is the no-JS fallback. */
   font-family: var(--font-ui);
-  margin: 14vh auto 32px;
+  margin: auto;   /* centred inside #gm-stage */
   padding: 20px;
   border-radius: var(--radius-lg);
   border: 1px solid transparent;
@@ -688,7 +691,7 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
    8. RESPONSIVE + ACCESSIBILITY
    ════════════════════════════════════════════════ */
 @media (max-width: 520px) {
-  body { padding: 0 10px !important; }
+  #gm-stage { padding: 14px 12px; }
   #gm-panel { padding: 14px; border-radius: 18px; font-size: 14px; }
   .gm-block { padding: 14px 16px; }
   #gm-expl-btn .gm-kbd { display: none; }
@@ -704,4 +707,16 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
     transition: none !important;
   }
   .gm-firefly { opacity: 0.7; }
+}
+
+/* Phones in portrait: shorter landscape so more of the scene fits the
+   narrow screen; tablets / landscape keep the full layout. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .gm-hills { height: 40vh; min-height: 220px; }
+  .gm-mist  { bottom: 7vh; height: 10vh; }
+  .gm-moon  { top: 7%; right: 10%; width: 60px; }
+  .gm-flock--high { top: 14%; }
+  .gm-flock--low  { top: 52%; }
+  #gm-panel { font-size: 15px; }
+  #gm-question { font-size: 1.15em; }
 }
