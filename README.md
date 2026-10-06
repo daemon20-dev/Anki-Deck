@@ -23,6 +23,23 @@ fireflies); the card itself uses cool white highlights only.
 
 The note type needs the fields **Front**, **Back** and **Explanation**.
 
+## Cloze deck
+
+A second note type for **Cloze deletion** cards lives in `cloze/`, with the same
+design. Create it in Anki via *Tools → Manage Note Types → Add → Clone: Cloze*, then
+paste:
+
+| File | Paste into |
+| --- | --- |
+| `cloze/front.html` | **Front Template** |
+| `cloze/back.html` | **Back Template** |
+| `cloze/styling.css` | **Styling** |
+
+Fields: **Text** and **Back Extra** (Anki's standard cloze fields). There is one box:
+on the back the blank turns into the answer in place and the box extends downward
+to reveal *Back Extra* inside it, staying centred on screen. Cards with an empty
+*Back Extra* simply show the answer.
+
 ## Features
 
 - **Smooth, lightweight transitions** — the background is drawn once and kept alive
@@ -61,7 +78,7 @@ lives once in `src/scene.html`, card centring is pure CSS (`#gm-stage`)), then r
 
 ```sh
 python3 tools/gen_hills.py   # only if you changed the landscape generator
-python3 tools/build.py
+python3 tools/build.py      # rebuilds both decks (cloze/styling.css = styling.css + src/cloze/cloze.css)
 ```
 
 ## Local preview

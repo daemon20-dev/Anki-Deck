@@ -1,0 +1,25 @@
+<!-- @include scene.html -->
+
+<!-- ░░░ CLOZE PANEL (BACK) ░░░  fields: Text, Back Extra
+     Same box as the front: the blank turns into the answer in place,
+     and the box extends downward to reveal Back Extra inside it. -->
+<!-- Full-screen stage: centres the card on any screen, scrolls if it is taller -->
+<div id="gm-stage">
+<div id="gm-panel" class="gm-back gm-cloze">
+  <div id="gm-content">
+    <div id="gm-question" class="gm-block">
+      <div class="gm-cloze-text">{{cloze:Text}}</div>
+
+      {{#Back Extra}}
+      <div id="gm-back-reveal" class="gm-collapse">
+        <div class="gm-collapse-inner">
+          <div class="gm-cloze-extra">{{Back Extra}}</div>
+        </div>
+      </div>
+      {{/Back Extra}}
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- @include stage.html -->

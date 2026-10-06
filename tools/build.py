@@ -2,7 +2,9 @@
 
     python3 tools/build.py
 
-Writes front.html and back.html (the files you paste into Anki) by
+Writes the files you paste into Anki — front.html / back.html / styling.css
+for the basic deck, and cloze/front.html / cloze/back.html / cloze/styling.css
+for the cloze deck — by
 expanding `<!-- @include name -->` lines with the matching file in src/.
 The night scene lives once in src/scene.html, so front and back can
 never drift apart.
@@ -29,7 +31,22 @@ def expand(text: str) -> str:
     return INCLUDE.sub(lambda m: include(m.group(1)), text)
 
 
-for name in ("front.html", "back.html"):
-    out = HEADER + expand((SRC / name).read_text(encoding="utf-8"))
-    (ROOT / name).write_text(out, encoding="utf-8")
-    print(f"wrote {name}")
+# Basic deck (Front / Back / Explanation) → repo root
+# Cloze deck  (Text / Back Extra)        → cloze/
+TEMPLATES = {
+    "front.html": "front.html",
+    "back.html": "back.html",
+    "cloze/front.html": "cloze/front.html",
+    "cloze/back.html": "cloze/back.html",
+}
+
+for src, dest in TEMPLATES.items():
+    out = HEADER + expand((SRC / src).read_text(encoding="utf-8"))
+    (ROOT / dest).write_text(out, encoding="utf-8")
+    print(f"wrote {dest}")
+
+# The cloze styling is the shared styling plus the cloze-specific rules.
+css = (ROOT / "styling.css").read_text(encoding="utf-8")
+cloze_css = (SRC / "cloze" / "cloze.css").read_text(encoding="utf-8")
+(ROOT / "cloze" / "styling.css").write_text(css.rstrip("\n") + "\n" + cloze_css, encoding="utf-8")
+print("wrote cloze/styling.css")

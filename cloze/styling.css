@@ -1,0 +1,774 @@
+/* ════════════════════════════════════════════════════════════════
+   MOONLIT HILLS — Anki card theme
+   ────────────────────────────────────────────────────────────────
+   • Looping night scene: sky, moon, twinkling stars, drifting
+     clouds, rolling hills, mist, fireflies, shooting star.
+   • Palette: shadows lean dark blue; the scene's few highlights
+     are warm (moon, cabin, fireflies), the card stays cool white.
+   • Works on Anki desktop, AnkiDroid and AnkiMobile.
+   • Respects "reduce motion" OS settings.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════
+   1. DESIGN TOKENS
+   ════════════════════════════════════════════════ */
+:root {
+  /* Sky / shadow blues */
+  --night-0: #03050d;
+  --night-1: #070c1f;
+  --night-2: #0d1633;
+  --night-3: #182452;
+  --night-4: #24306a;
+
+  /* Warm highlights */
+  --accent:      #b9c6ff;                   /* card accent: cool moonlight */
+  --accent-soft: rgba(185, 198, 255, 0.45);
+  --accent-faint: rgba(185, 198, 255, 0.10);
+
+  /* Text */
+  --ink-1: #f3f5ff;
+  --ink-2: #c9d2f0;
+  --ink-3: #8e9ac4;
+  --ink-4: #5d6890;
+
+  /* Surfaces */
+  --glass:        rgba(16, 23, 50, 0.86);
+  --glass-strong: rgba(8, 12, 30, 0.93);
+  --line:         rgba(160, 182, 255, 0.10);
+  --line-strong:  rgba(160, 182, 255, 0.18);
+  --block:        #060914;   /* flat fill for question / answer / explanation */
+
+  /* Shadows (blue-tinted, never pure black) */
+  --shadow-lg: 0 22px 44px -18px rgba(2, 6, 28, 0.9),
+               0 6px 14px -6px rgba(8, 18, 60, 0.6);
+  --shadow-sm: 0 6px 16px -6px rgba(4, 10, 40, 0.8);
+
+  /* Shape & motion */
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --ease-out:  cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);   /* ease-out-quint */
+
+  /* System fonts only: no network font load, no text reflow on each card. */
+  --font-ui: 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system,
+             BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ════════════════════════════════════════════════
+   2. BASE / ANKI WRAPPER RESET
+   ════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Scrolling stays enabled but the scrollbar is hidden: no gutter
+   stripe over the scene and no layout shift when content grows. */
+html {
+  min-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--night-0);
+}
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Neutralise each Anki client's page layout; the card itself is
+   positioned by #gm-stage below. */
+body {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  overflow-x: hidden;
+}
+
+/* Strip Anki's default card look (also in night mode) */
+.card,
+.card.nightMode,
+.card.night_mode {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  font-family: var(--font-ui);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Anki desktop briefly hides #qa while it swaps the card HTML. The card
+   handles its own entrance, so keep #qa visible to avoid a text blink. */
+/* The stage is a fixed, full-viewport scroll box. Being fixed, it is
+   independent of how each Anki client wraps the card (desktop #qa,
+   AnkiDroid/AnkiMobile containers), and flex auto-margins keep the
+   card centred at every height — even while the answer animates open —
+   while taller cards simply scroll. */
+#gm-stage {
+  position: fixed;
+  inset: 0;          /* no 100vw/100vh: they overflow when a client zooms the page */
+  box-sizing: border-box;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#qa { opacity: 1 !important; transition: none !important; }
+
+img { max-width: 100%; height: auto; border-radius: 10px; }
+
+::selection { background: rgba(140, 160, 255, 0.35); color: #fff; }
+
+/* ════════════════════════════════════════════════
+   3. NIGHT SCENE (fixed, behind everything)
+   ════════════════════════════════════════════════ */
+#gm-scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    /* warm afterglow on the horizon */
+    radial-gradient(110% 35% at 50% 100%, rgba(255, 140, 70, 0.07) 0%, transparent 70%),
+    /* cool moon wash */
+    radial-gradient(55% 45% at 80% 12%, rgba(110, 140, 255, 0.06), transparent 70%),
+    linear-gradient(180deg, #020309 0%, #050918 35%, #0a1128 65%, #111a3a 88%, #181f45 100%);
+}
+
+/* The template script moves the first scene out of the card container
+   and keeps it alive across flips and cards (see front/back.html).
+   It sits above any freshly rendered copy, so a flip never shows a
+   restarted sky, even for the single frame before the script runs. */
+#gm-scene.gm-scene-live { z-index: 0; }
+
+/* Every scene animation shares one global clock (set by the template
+   script) so the sky never "jumps" when Anki flips front → back. */
+#gm-scene *,
+#gm-scene *::before,
+#gm-scene *::after {
+  animation-delay: calc(var(--gm-clock, 0s) - var(--d, 0s));
+}
+
+.gm-layer { position: absolute; inset: 0; }
+#gm-scene svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Everything that moves is a GPU layer that only animates transform /
+   opacity — no per-frame repaints, filters or layout. */
+.gm-stars, .gm-sparkle, .gm-moon::after, .gm-shooting,
+.gm-clouds, .gm-mist, .gm-firefly { will-change: transform, opacity; }
+
+/* ── Stars ── */
+.gm-stars {
+  opacity: 0.7;
+  animation: gm-twinkle 5s ease-in-out infinite alternate;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 78%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 78%);
+}
+.gm-stars--near {
+  --d: 2.5s;
+  animation-duration: 7s;
+}
+
+/* Hero sparkles (4-point stars) */
+.gm-sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.6), 0 0 12px 2px rgba(200, 210, 255, 0.2);
+  animation: gm-sparkle 4s ease-in-out infinite;
+}
+.gm-sparkle::before,
+.gm-sparkle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  transform: translate(-50%, -50%);
+}
+.gm-sparkle::before { width: 18px; height: 1px; }
+.gm-sparkle::after  { width: 1px; height: 18px; background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.9), transparent); }
+
+.gm-sparkle:nth-child(1) { top: 9%;  left: 14%; --d: 0s; }
+.gm-sparkle:nth-child(2) { top: 22%; left: 38%; --d: 1.3s; transform: scale(0.7); }
+.gm-sparkle:nth-child(3) { top: 6%;  left: 62%; --d: 2.6s; transform: scale(0.85); }
+.gm-sparkle:nth-child(4) { top: 31%; left: 91%; --d: 3.4s; transform: scale(0.6); }
+
+/* ── Moon ── */
+.gm-moon {
+  position: absolute;
+  top: 9%;
+  right: 12%;
+  width: clamp(54px, 9vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    /* maria — the soft grey "seas" */
+    radial-gradient(ellipse 24% 19% at 34% 38%, rgba(140, 130, 128, 0.30), transparent 72%),
+    radial-gradient(ellipse 17% 13% at 57% 28%, rgba(140, 130, 128, 0.24), transparent 72%),
+    radial-gradient(ellipse 28% 16% at 56% 60%, rgba(140, 130, 128, 0.26), transparent 72%),
+    radial-gradient(ellipse 12% 16% at 26% 64%, rgba(140, 130, 128, 0.18), transparent 72%),
+    /* a few soft craters */
+    radial-gradient(circle at 70% 46%, rgba(130, 118, 110, 0.22) 0 3%, transparent 5.5%),
+    radial-gradient(circle at 44% 18%, rgba(130, 118, 110, 0.18) 0 2.5%, transparent 4.5%),
+    radial-gradient(circle at 38% 80%, rgba(130, 118, 110, 0.16) 0 2.2%, transparent 4%),
+    radial-gradient(circle at 22% 44%, rgba(130, 118, 110, 0.14) 0 1.8%, transparent 3.5%),
+    /* surface, brighter toward the upper-left */
+    radial-gradient(circle at 38% 34%, #fffbf3 0%, #f3ebdc 48%, #e2d2b8 82%, #cdb898 100%);
+  box-shadow:
+    inset -10px -9px 20px rgba(90, 80, 110, 0.30),   /* soft terminator shading, blue-tinted */
+    inset 3px 3px 8px rgba(255, 255, 255, 0.45),     /* bright limb */
+    0 0 24px 3px rgba(255, 236, 210, 0.25),
+    0 0 90px 20px rgba(255, 190, 140, 0.07);
+}
+/* Faint lunar halo ring */
+.gm-moon::before {
+  content: '';
+  position: absolute;
+  inset: -55%;
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 50%, rgba(214, 222, 255, 0.025) 60%, rgba(255, 230, 205, 0.02) 66%, transparent 74%);
+}
+.gm-moon::after {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 228, 196, 0.09) 0%, rgba(255, 228, 196, 0.04) 35%, transparent 68%);
+  animation: gm-moon-glow 8s ease-in-out infinite alternate;
+}
+
+/* ── Clouds (seamless horizontal loop) ── */
+.gm-clouds {
+  position: absolute;
+  left: 0;
+  width: calc(100% + 1600px);
+  animation: gm-drift 160s linear infinite;
+}
+.gm-clouds--high {
+  top: 6%;
+  height: 170px;
+  opacity: 0.8;
+}
+.gm-clouds--low {
+  --d: 40s;
+  top: 28%;
+  height: 150px;
+  opacity: 0.55;
+  animation-duration: 110s;
+}
+
+/* ── Birds ──
+   Each flock glides across the screen (transform only); each bird flaps
+   by squashing vertically. Pale, moonlit silhouettes so they read on
+   the dark sky as well as over the hills. */
+.gm-flock {
+  position: absolute;
+  left: 0;
+  width: 120px;
+  height: 60px;
+  will-change: transform;
+  animation: gm-fly-right 75s linear infinite;
+}
+.gm-flock--high { top: 20%; }
+.gm-flock--low  { top: 47%; --d: 38s; animation-name: gm-fly-left; animation-duration: 95s; transform: scale(.8); }
+
+.gm-bird {
+  position: absolute;
+  width: 18px;
+  height: 8px;
+  will-change: transform;
+  animation: gm-flap 0.9s ease-in-out infinite alternate;
+}
+.gm-bird svg { fill: rgba(196, 206, 240, 0.55); }
+.gm-flock--low .gm-bird svg { fill: rgba(160, 172, 215, 0.45); }
+
+.gm-bird:nth-child(1) { left: 0;    top: 18px; --d: 0s; }
+.gm-bird:nth-child(2) { left: 22px; top: 6px;  --d: 0.35s; width: 14px; }
+.gm-bird:nth-child(3) { left: 40px; top: 24px; --d: 0.6s;  width: 16px; }
+.gm-bird:nth-child(4) { left: 62px; top: 12px; --d: 0.2s;  width: 13px; }
+
+@keyframes gm-fly-right {
+  0%   { transform: translate3d(-15vw, 0, 0); }
+  50%  { transform: translate3d(50vw, -18px, 0); }
+  100% { transform: translate3d(115vw, 6px, 0); }
+}
+@keyframes gm-fly-left {
+  0%   { transform: translate3d(115vw, 0, 0) scale(-.8, .8); }
+  50%  { transform: translate3d(50vw, 12px, 0) scale(-.8, .8); }
+  100% { transform: translate3d(-15vw, -8px, 0) scale(-.8, .8); }
+}
+@keyframes gm-flap {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(0.35) translateY(1px); }
+}
+
+/* ── Shooting star ── */
+.gm-shooting {
+  position: absolute;
+  top: 12%;
+  left: 70%;
+  width: 140px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(270deg, rgba(255, 255, 255, 0.85) 0%, rgba(200, 210, 255, 0.4) 20%, rgba(140, 160, 255, 0) 100%);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  transform-origin: left center;
+  animation: gm-shoot 11s ease-in infinite;
+}
+
+/* ── Hills (back → front) ── */
+/* Both landscape layers share one viewBox and height so they line up:
+   back = mountains, far + mid hills, lake; near = foreground, pines, cabin.
+   Artwork is generated by tools/gen_hills.py. */
+.gm-hills {
+  top: auto;
+  height: 60vh;
+  min-height: 280px;
+}
+
+/* ── Drifting mist between the hills ── */
+.gm-mist {
+  top: auto;
+  bottom: 11vh;
+  height: 14vh;
+  width: calc(100% + 700px);
+  background:
+    radial-gradient(closest-side, rgba(150, 170, 230, 0.08), transparent) 0 40% / 700px 70% repeat-x,
+    radial-gradient(closest-side, rgba(170, 180, 230, 0.04), transparent) 350px 80% / 700px 50% repeat-x;
+  animation: gm-drift-mist 60s linear infinite;
+}
+
+/* ── Fireflies ── */
+.gm-fireflies { top: auto; height: 34vh; }
+.gm-firefly {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #ffd29a;
+  box-shadow: 0 0 5px 1px rgba(255, 170, 90, 0.5), 0 0 14px 4px rgba(255, 140, 60, 0.12);
+  opacity: 0;
+  animation: gm-firefly 9s ease-in-out infinite;
+}
+.gm-firefly:nth-child(1) { left: 8%;  bottom: 30%; --d: 0s; }
+.gm-firefly:nth-child(2) { left: 22%; bottom: 52%; --d: 2.1s; animation-duration: 11s; }
+.gm-firefly:nth-child(3) { left: 41%; bottom: 18%; --d: 4.7s; }
+.gm-firefly:nth-child(4) { left: 57%; bottom: 44%; --d: 1.2s; animation-duration: 12s; }
+.gm-firefly:nth-child(5) { left: 73%; bottom: 26%; --d: 6.3s; }
+.gm-firefly:nth-child(6) { left: 86%; bottom: 58%; --d: 3.5s; animation-duration: 10s; }
+.gm-firefly:nth-child(7) { left: 94%; bottom: 20%; --d: 7.8s; }
+
+/* Gentle vignette so the panel always reads well */
+.gm-vignette {
+  background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(1, 2, 10, 0.7) 100%);
+}
+
+/* ════════════════════════════════════════════════
+   4. SCENE KEYFRAMES
+   ════════════════════════════════════════════════ */
+@keyframes gm-twinkle {
+  0%   { opacity: 0.4; }
+  50%  { opacity: 0.6; }
+  100% { opacity: 0.75; }
+}
+@keyframes gm-sparkle {
+  0%, 100% { opacity: 0.15; scale: 0.6; }
+  50%      { opacity: 0.7;  scale: 1; }
+}
+@keyframes gm-moon-glow {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+@keyframes gm-drift      { to { transform: translate3d(-1600px, 0, 0); } }
+@keyframes gm-drift-mist { to { transform: translate3d(-700px, 0, 0); } }
+@keyframes gm-shoot {
+  0%, 82% { opacity: 0; transform: rotate(150deg) translateX(0) scaleX(0.3); }
+  84%     { opacity: 1; }
+  92%     { opacity: 0; transform: rotate(150deg) translateX(46vw) scaleX(1); }
+  100%    { opacity: 0; transform: rotate(150deg) translateX(46vw) scaleX(1); }
+}
+@keyframes gm-firefly {
+  0%   { opacity: 0;   transform: translate(0, 0); }
+  20%  { opacity: 0.7; }
+  50%  { opacity: 0.25; transform: translate(26px, -34px); }
+  75%  { opacity: 0.6; transform: translate(-14px, -58px); }
+  100% { opacity: 0;   transform: translate(8px, -84px); }
+}
+
+/* ════════════════════════════════════════════════
+   5. PANEL (glass card floating over the scene)
+   ════════════════════════════════════════════════ */
+#gm-panel {
+  position: relative;
+  z-index: 1;
+  /* Keep the card on its own permanent GPU layer. Otherwise the browser
+     re-decides how to anti-alias its text whenever the moving scene
+     layers behind it or an animation start/stop — which shows up as the
+     text subtly "pulsing". */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 680px;
+  font-family: var(--font-ui);
+  margin: auto;   /* centred inside #gm-stage */
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  /* Glass fill + a gradient hairline border (bright top-left → fading) */
+  background:
+    linear-gradient(160deg, var(--glass) 0%, var(--glass-strong) 100%) padding-box,
+    linear-gradient(160deg, rgba(210, 222, 255, 0.22) 0%, rgba(160, 182, 255, 0.07) 35%, rgba(160, 182, 255, 0.04) 70%, rgba(120, 140, 255, 0.12) 100%) border-box;
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(220, 230, 255, 0.08),
+    inset 0 -1px 0 rgba(10, 20, 60, 0.6);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-1);
+}
+
+/* Soft moonlight sheen across the upper half of the glass */
+#gm-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 20% 0%, rgba(200, 215, 255, 0.07), transparent 60%);
+  pointer-events: none;
+}
+#gm-panel > * { position: relative; }
+
+/* The card is the only thing that changes between reviews: it eases in
+   on the question side. The answer side keeps it perfectly still (the
+   answer simply opens below the question). */
+#gm-panel.gm-front { animation: gm-panel-in 0.32s var(--ease-soft) both; }
+
+@keyframes gm-panel-in {
+  from { opacity: 0; transform: translate3d(0, 8px, 0); }
+  to   { opacity: 1; transform: translateZ(0); }
+}
+
+/* ── Content area ── */
+#gm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.gm-block {
+  width: 100%;
+  padding: 18px 22px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--block);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+#gm-question {
+  font-size: 1.2em;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+}
+
+#gm-answer {
+  font-size: 1.05em;
+  line-height: 1.8;
+  color: var(--ink-2);
+  margin-top: 12px;
+}
+
+#gm-expl-body {
+  font-size: 0.93em;
+  line-height: 1.8;
+  color: var(--ink-3);
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+          hyphens: auto;
+}
+
+#gm-question b, #gm-answer b, #gm-expl-body b,
+#gm-question strong, #gm-answer strong, #gm-expl-body strong { color: #fff; font-weight: 700; }
+#gm-answer i, #gm-expl-body i { color: var(--accent); }
+.gm-block a { color: var(--accent); text-decoration-color: var(--accent-soft); }
+.gm-block ul, .gm-block ol { padding-left: 1.3em; text-align: left; }
+
+/* ── Height-animated collapsibles (no JS measuring needed) ── */
+.gm-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s var(--ease-out);
+}
+.gm-collapse > .gm-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+.gm-collapse.is-open { grid-template-rows: 1fr; }
+
+.gm-collapse .gm-collapse-inner > * {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.3s ease, transform 0.38s var(--ease-out);
+}
+.gm-collapse.is-open .gm-collapse-inner > * { opacity: 1; transform: none; }
+
+#gm-expl-anim-wrap .gm-collapse-inner > * { margin-top: 12px; }
+
+/* Answer reveal: slides open once when the back side loads */
+#gm-back-reveal {
+  grid-template-rows: 1fr;
+  animation: gm-reveal 0.34s var(--ease-soft) both;
+}
+#gm-back-reveal .gm-collapse-inner > * {
+  opacity: 1;
+  transform: none;
+  animation: gm-reveal-fade 0.34s var(--ease-soft) 0.04s both;
+}
+
+@keyframes gm-reveal {
+  from { grid-template-rows: 0fr; }
+  to   { grid-template-rows: 1fr; }
+}
+@keyframes gm-reveal-fade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* The explanation button eases from its dimmed (front) look instead of
+   popping when the back side enables it. */
+.gm-back #gm-expl-btn:not(:disabled) { animation: gm-btn-wake 0.4s ease both; }
+@keyframes gm-btn-wake { from { opacity: 0.35; } to { opacity: 1; } }
+
+/* ════════════════════════════════════════════════
+   6. FOOTER: explanation button
+   ════════════════════════════════════════════════ */
+#gm-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+/* ── Explanation button ── */
+#gm-expl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font: 600 10.5px/1 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+/* Chevron */
+#gm-expl-btn::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin: -3px 2px 0 0;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.3s var(--ease-out), margin 0.3s var(--ease-out);
+}
+
+.gm-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 5px;
+  border: 1px solid var(--line-strong);
+  background: rgba(4, 8, 24, 0.5);
+  font-size: 9.5px;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+
+#gm-expl-btn:not(:disabled):hover,
+#gm-expl-btn:focus-visible {
+  color: #eef2ff;
+  border-color: rgba(200, 212, 255, 0.35);
+  background: rgba(185, 198, 255, 0.08);
+  box-shadow: var(--shadow-sm), 0 0 18px -4px rgba(160, 180, 255, 0.4);
+  outline: none;
+}
+#gm-expl-btn:not(:disabled):active { transform: translateY(1px); }
+
+#gm-expl-btn.gm-expl-open {
+  color: #fff;
+  border-color: rgba(210, 222, 255, 0.45);
+  background: rgba(185, 198, 255, 0.14);
+}
+#gm-expl-btn.gm-expl-open::after { transform: rotate(-135deg); margin-top: 3px; }
+
+#gm-expl-btn:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+
+/* ════════════════════════════════════════════════
+   7. OPTIONAL HUD + MILESTONE OVERLAY
+      (used if an add-on / script injects these ids)
+   ════════════════════════════════════════════════ */
+#gm-time-box, #gm-streak-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--glass-strong);
+  box-shadow: var(--shadow-sm);
+  font: 600 11px/1 var(--font-ui);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.gm-bar-label { color: var(--ink-4); letter-spacing: 0.12em; text-transform: uppercase; }
+#gm-time-val, #gm-streak-val {
+  min-width: 3ch;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+#gm-milestone {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+#gm-ms-inner {
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: transform 0.5s cubic-bezier(0.2, 1.5, 0.3, 1), opacity 0.3s ease;
+}
+.gm-ms-show #gm-ms-inner { opacity: 1; transform: scale(1); }
+.gm-ms-hide #gm-ms-inner {
+  opacity: 0;
+  transform: scale(1.05);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+#gm-ms-main {
+  font: 800 clamp(28px, 7vw, 44px)/1.2 var(--font-ui);
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(170, 190, 255, 0.6), 0 6px 24px rgba(4, 10, 40, 0.9);
+}
+#gm-ms-sub {
+  margin-top: 12px;
+  font: 700 11px/1 var(--font-ui);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 2px 10px rgba(4, 10, 40, 0.9);
+}
+
+/* ════════════════════════════════════════════════
+   8. RESPONSIVE + ACCESSIBILITY
+   ════════════════════════════════════════════════ */
+@media (max-width: 520px) {
+  #gm-stage { padding: 14px 12px; }
+  #gm-panel { padding: 14px; border-radius: 18px; font-size: 14px; }
+  .gm-block { padding: 14px 16px; }
+  #gm-expl-btn .gm-kbd { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gm-scene *,
+  #gm-scene *::before,
+  #gm-scene *::after,
+  #gm-panel,
+  #gm-panel * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .gm-firefly { opacity: 0.7; }
+}
+
+/* Phones in portrait: shorter landscape so more of the scene fits the
+   narrow screen; tablets / landscape keep the full layout. */
+@media (max-width: 600px) and (orientation: portrait) {
+  .gm-hills { height: 40vh; min-height: 220px; }
+  .gm-mist  { bottom: 7vh; height: 10vh; }
+  .gm-moon  { top: 7%; right: 10%; width: 60px; }
+  .gm-flock--high { top: 14%; }
+  .gm-flock--low  { top: 52%; }
+  #gm-panel { font-size: 15px; }
+  #gm-question { font-size: 1.15em; }
+}
+
+/* ════════════════════════════════════════════════
+   CLOZE NOTE TYPE  (fields: Text, Back Extra)
+   Appended to the shared styling by tools/build.py.
+   ════════════════════════════════════════════════ */
+
+/* One box holds everything: cloze text reads as body text, not a title */
+.gm-cloze #gm-question {
+  font-size: 1.1em;
+  font-weight: 500;
+  line-height: 1.75;
+  color: var(--ink-2);
+}
+
+/* The blank on the front and the answer on the back */
+.gm-cloze .cloze {
+  display: inline-block;
+  padding: 0 0.35em;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(185, 198, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(185, 198, 255, 0.22);
+}
+.gm-front.gm-cloze .cloze { color: var(--accent); letter-spacing: 0.04em; }
+
+/* On the back the revealed answer glows briefly, in place */
+.gm-back.gm-cloze .cloze { animation: gm-cloze-in 0.6s var(--ease-soft) both; }
+@keyframes gm-cloze-in {
+  from { background: rgba(185, 198, 255, 0.34); box-shadow: inset 0 0 0 1px rgba(210, 222, 255, 0.6), 0 0 18px rgba(160, 180, 255, 0.35); }
+  to   { background: rgba(185, 198, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(185, 198, 255, 0.22), 0 0 0 rgba(160, 180, 255, 0); }
+}
+
+/* Other (inactive) clozes on the same note read as normal text */
+.gm-cloze .cloze-inactive { color: inherit; }
+
+/* Back Extra: revealed inside the same box, below a hairline */
+.gm-cloze-extra {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.88em;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--ink-3);
+  text-align: justify;
+  text-align-last: center;
+  -webkit-hyphens: auto;
+          hyphens: auto;
+}
