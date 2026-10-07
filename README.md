@@ -35,6 +35,12 @@ paste:
 | `cloze/back.html` | **Back Template** |
 | `cloze/styling.css` | **Styling** |
 
+> **Important:** the note type must be created with **Clone: Cloze**. Anki only renders
+> `{{cloze:…}}` on cloze-type note types, and a basic note type can't be converted. If
+> Anki says *"Found '{{cloze:Text}}', but there is no field called 'Text'"*, the note type
+> was cloned from a basic/other type — recreate it with *Clone: Cloze*, and move existing
+> notes over with *Browse → Notes → Change Note Type* (map your fields to Text / Back Extra).
+
 Fields: **Text** and **Back Extra** (Anki's standard cloze fields). There is one box:
 on the back the blank turns into the answer in place and the box extends downward
 to reveal *Back Extra* inside it, staying centred on screen. Cards with an empty
