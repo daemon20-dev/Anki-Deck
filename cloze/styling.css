@@ -478,7 +478,7 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
 
 #gm-question {
   font-size: 1.2em;
-  font-weight: 600;
+  font-weight: 500;   /* normal text stays visibly lighter than pasted bold */
   line-height: 1.55;
   letter-spacing: -0.01em;
   color: var(--ink-1);
@@ -501,11 +501,124 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
           hyphens: auto;
 }
 
-#gm-question b, #gm-answer b, #gm-expl-body b,
-#gm-question strong, #gm-answer strong, #gm-expl-body strong { color: #fff; font-weight: 700; }
-#gm-answer i, #gm-expl-body i { color: var(--accent); }
+/* ════════════════════════════════════════════════
+   RICH TEXT — formatting pasted into any field (Front, Back,
+   Explanation, cloze Text / Back Extra): bold, italic, underline,
+   lists, tables, headings. Shared by both decks.
+   ════════════════════════════════════════════════ */
+
+/* Emphasis keeps whatever the paste said: bold is clearly bold, normal
+   stays normal (Google Docs wraps text in <b style="font-weight:normal">,
+   which is respected because inline styles win). */
+.gm-block b, .gm-block strong { font-weight: 750; color: #fff; }
+/* Google Docs wraps whole pastes in <b style="font-weight:normal"> — not bold */
+.gm-block b[style*="font-weight:normal"], .gm-block b[style*="font-weight: normal"] { color: inherit; }
+.gm-block i, .gm-block em     { font-style: italic; }
+.gm-block u                   { text-decoration: underline; text-underline-offset: 0.18em; }
+.gm-block s, .gm-block strike, .gm-block del { text-decoration: line-through; opacity: 0.8; }
+.gm-block sup, .gm-block sub  { font-size: 0.75em; line-height: 0; }
+.gm-block mark                { background: rgba(185, 198, 255, 0.22); color: #fff; padding: 0 0.2em; border-radius: 4px; }
 .gm-block a { color: var(--accent); text-decoration-color: var(--accent-soft); }
-.gm-block ul, .gm-block ol { padding-left: 1.3em; text-align: left; }
+
+/* Paragraph spacing (the global reset removes it) */
+.gm-block p, .gm-block div > p { margin: 0.5em 0; }
+.gm-block p:first-child { margin-top: 0; }
+.gm-block p:last-child  { margin-bottom: 0; }
+.gm-block h1, .gm-block h2, .gm-block h3, .gm-block h4 {
+  margin: 0.6em 0 0.35em; line-height: 1.3; font-weight: 700; color: #fff;
+}
+.gm-block h1 { font-size: 1.35em; } .gm-block h2 { font-size: 1.2em; }
+.gm-block h3 { font-size: 1.08em; } .gm-block h4 { font-size: 1em; }
+.gm-block hr { border: 0; border-top: 1px solid var(--line-strong); margin: 0.9em 0; }
+.gm-block blockquote {
+  margin: 0.6em 0; padding: 0.2em 0 0.2em 0.9em; text-align: left;
+  border-left: 2px solid var(--accent-soft); color: var(--ink-2);
+}
+.gm-block code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em;
+  padding: 0.1em 0.35em; border-radius: 5px; background: rgba(255, 255, 255, 0.06);
+}
+
+/* Lists: real bullets / numbers, left-aligned, centred as a block inside
+   centred cards (display: table shrinks the list to its content). */
+.gm-block ul, .gm-block ol {
+  display: table;
+  margin: 0.5em auto;
+  padding-left: 1.5em;
+  text-align: left;
+}
+.gm-block ul { list-style: disc outside; }
+.gm-block ul ul { list-style-type: circle; }
+.gm-block ul ul ul { list-style-type: square; }
+.gm-block ol { list-style: decimal outside; }
+.gm-block ol ol { list-style-type: lower-alpha; }
+.gm-block ol ol ol { list-style-type: lower-roman; }
+.gm-block li { display: list-item; margin: 0.25em 0; padding-left: 0.2em; }
+.gm-block li::marker { color: var(--accent); }
+.gm-block li > ul, .gm-block li > ol { display: block; margin: 0.25em 0 0.25em 0.2em; }
+.gm-block li p { margin: 0; }
+/* Justified areas (explanation, back extra) keep lists full width */
+#gm-expl-body ul, #gm-expl-body ol, .gm-cloze-extra ul, .gm-cloze-extra ol { display: block; margin-left: 0; }
+
+/* Tables: pasted tables render as clean tables that match the card.
+   Pasted widths are capped so a table never overflows; wide tables
+   scroll sideways on phones. Bold, alignment and spans are kept. */
+.gm-block table {
+  display: block;
+  width: max-content !important;
+  max-width: 100%;
+  margin: 0.8em auto;
+  overflow-x: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.92em;
+  line-height: 1.5;
+  text-align: left;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+}
+.gm-block table tbody, .gm-block table thead { width: 100%; }
+.gm-block th, .gm-block td {
+  min-width: 4em;
+  padding: 0.5em 0.8em;
+  vertical-align: top;
+  border: 1px solid var(--line-strong) !important;   /* pasted borders are often black */
+  width: auto !important;
+  overflow-wrap: break-word;   /* whole words in cells; wide tables scroll instead */
+  word-break: normal;
+  -webkit-hyphens: manual;
+          hyphens: manual;
+}
+.gm-block th, .gm-block thead td {
+  font-weight: 700;
+  color: #fff;
+  background: rgba(185, 198, 255, 0.08) !important;
+}
+.gm-block tr:nth-child(even) td { background: rgba(255, 255, 255, 0.025); }
+.gm-block table p { margin: 0; }
+
+/* Neutralise paste leftovers that clash with the dark card: black or
+   white text/backgrounds and foreign fonts. Real colours, highlights,
+   bold, italic and sizes from the paste are kept. */
+.gm-block [style*="font-family"] { font-family: inherit !important; }
+.gm-block [style*="color: rgb(0, 0, 0)"], .gm-block [style*="color:rgb(0,0,0)"],
+.gm-block [style*="color: #000000"], .gm-block [style*="color:#000000"],
+.gm-block [style*="color: #000;"], .gm-block [style*="color:#000;"],
+.gm-block [style*="color: black"], .gm-block [style*="color:black"],
+.gm-block font[color="#000000"], .gm-block font[color="black"] { color: inherit !important; }
+.gm-block [style*="background-color: rgb(255, 255, 255)"], .gm-block [style*="background-color:rgb(255,255,255)"],
+.gm-block [style*="background-color: #fff"], .gm-block [style*="background-color:#fff"],
+.gm-block [style*="background-color: white"], .gm-block [style*="background: white"],
+.gm-block [style*="background:white"], .gm-block [style*="background: #fff"], .gm-block [style*="background:#fff"],
+.gm-block [style*="background: rgb(255, 255, 255)"], .gm-block [style*="background:rgb(255,255,255)"],
+.gm-block [style*="background-color:white"], .gm-block [style*="background-color: #ffffff"],
+.gm-block td[bgcolor="#ffffff"], .gm-block td[bgcolor="white"],
+.gm-block [style*="background-color: transparent"] { background-color: transparent !important; }
+.gm-block [style*="background-color: rgb(255, 255, 255)"] * { background-color: transparent !important; }
+
+/* Anki {{hint:Field}} links */
+.gm-block a.hint { font-size: 0.85em; color: var(--ink-3); text-decoration: none; border-bottom: 1px dashed var(--ink-4); }
+.gm-block div.hint { margin-top: 0.4em; font-size: 0.9em; color: var(--ink-2); }
 
 /* ── Height-animated collapsibles (no JS measuring needed) ── */
 .gm-collapse {
