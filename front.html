@@ -104,4 +104,157 @@
 }());
 </script>
 
+<script>
+(function () {
+  /* ── Plain-text formatter (basic deck) ──
+     Text pasted from Circle to Search, phones or other plain-text sources
+     arrives as lines with "•", "-", "1." markers or tab / "|"-separated
+     columns. At display time (notes are never modified) such lines become
+     real bullet lists, numbered lists and tables, so they pick up the
+     card's list and table styling. Blocks that already contain real lists
+     or tables are left exactly as they are. */
+  var SP = '(?:\\s|&nbsp;|\\u00a0)';
+  var LEAD_TAGS = /^((?:<[^>]+>)*)([\s\S]*)$/;
+  var BULLET = new RegExp('^(' + SP + '*)([•●◦○▪■‣⁃∙·\\-–—*])' + SP + '+([\\s\\S]*)$');
+  var NUMBER = new RegExp('^(' + SP + '*)(\\d{1,3}|[a-zA-Z]|[ivxIVX]{1,5})([.)])' + SP + '+([\\s\\S]*)$');
+
+  function indentOf(s) {
+    return s.replace(/&nbsp;| /g, ' ').replace(/\t/g, '    ').length;
+  }
+
+  function classify(raw) {
+    var t = LEAD_TAGS.exec(raw), tags = t[1], rest = t[2], m;
+    if ((m = BULLET.exec(rest))) {
+      var lvl = indentOf(m[1]) >= 6 ? 2 : indentOf(m[1]) >= 2 ? 1 : 0;
+      if (/[◦○]/.test(m[2])) lvl = Math.max(lvl, 1);
+      if (/[▪■]/.test(m[2])) lvl = Math.max(lvl, 2);
+      return { kind: 'li', ordered: false, level: lvl, html: tags + m[3] };
+    }
+    if ((m = NUMBER.exec(rest))) {
+      var mark = m[2], type = /^\d/.test(mark) ? '1' : /^[ivx]{2,}$/i.test(mark) ? 'i' : 'a';
+      var level = type === '1' ? 0 : type === 'a' ? 1 : 2;
+      level = Math.max(level, indentOf(m[1]) >= 2 ? 1 : 0);
+      return { kind: 'li', ordered: true, type: type, level: level, html: tags + m[4],
+               weak: type !== '1' };   // letters / roman need a neighbouring item to count
+    }
+    var plain = raw.replace(/<[^>]+>/g, '');
+    if (plain.indexOf('\t') !== -1) return { kind: 'row', cells: raw.split('\t') };
+    if ((plain.match(/\|/g) || []).length >= 2 || /^\s*\|/.test(plain)) {
+      if (/^[\s|:\-]+$/.test(plain)) return { kind: 'sep' };          // markdown |---|---|
+      var cells = raw.split('|');
+      if (/^\s*(<[^>]+>\s*)*$/.test(cells[0])) cells.shift();
+      if (cells.length && /^\s*(<[^>]+>\s*)*$/.test(cells[cells.length - 1])) cells.pop();
+      return { kind: 'row', cells: cells };
+    }
+    return { kind: /^\s*$/.test(plain.replace(/&nbsp;/g, '')) ? 'blank' : 'text', html: raw };
+  }
+
+  function buildList(items) {
+    var out = '', stack = [];
+    function open(it) {
+      var tag = it.ordered ? 'ol' : 'ul';
+      out += '<' + tag + (it.ordered && it.type !== '1' ? ' type="' + it.type + '"' : '') + '>';
+      stack.push({ tag: tag, level: it.level });
+    }
+    items.forEach(function (it, i) {
+      if (!stack.length) open(it);
+      else {
+        var top = stack[stack.length - 1];
+        if (it.level > top.level) { open(it); }
+        else {
+          out += '</li>';
+          while (stack.length > 1 && it.level < stack[stack.length - 1].level) {
+            out += '</' + stack.pop().tag + '></li>';
+          }
+          top = stack[stack.length - 1];
+          if ((it.ordered ? 'ol' : 'ul') !== top.tag && it.level === top.level) {
+            out += '</' + stack.pop().tag + '>';
+            open(it);
+          }
+        }
+      }
+      out += '<li>' + it.html.trim();
+    });
+    out += '</li>';
+    while (stack.length) out += '</' + stack.pop().tag + '>' + (stack.length ? '</li>' : '');
+    return out;
+  }
+
+  function buildTable(rows) {
+    var out = '<table>';
+    rows.forEach(function (r, i) {
+      var tag = i === 0 ? 'th' : 'td';
+      out += '<tr>' + r.cells.map(function (c) { return '<' + tag + '>' + c.trim() + '</' + tag + '>'; }).join('') + '</tr>';
+    });
+    return out + '</table>';
+  }
+
+  function format(el) {
+    var html = el.innerHTML;
+    if (/<(ul|ol|table)\b/i.test(html)) return;            // already real lists / tables
+
+    var lines = html
+      .replace(/\r/g, '')
+      .replace(/<(div|p)(\s[^>]*)?>\s*<br\s*\/?>\s*<\/\1>/gi, '\n')        // <div><br></div> = one empty line
+      .replace(/<\/(div|p)>\s*<(div|p)(\s[^>]*)?>/gi, '\n')               // line boundary between blocks
+      .replace(/<\/?(div|p)(\s[^>]*)?>/gi, '\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/^\n+|\n+$/g, '')
+      .split('\n');
+    var parts = lines.map(classify);
+
+    // Letter / roman items only count when another list item is next to them
+    parts.forEach(function (p, i) {
+      if (p.weak) {
+        var near = function (j) { while (parts[j] && parts[j].kind === 'blank') j += j > i ? 1 : -1; return parts[j] && parts[j].kind === 'li'; };
+        if (!near(i - 1) && !near(i + 1)) parts[i] = { kind: 'text', html: lines[i] };
+      }
+    });
+    var rowCount = parts.filter(function (p) { return p.kind === 'row'; }).length;
+    if (!parts.some(function (p) { return p.kind === 'li'; }) && rowCount < 2) return;   // nothing to do
+
+    var out = [], i = 0;
+    function nextNonBlank(j) { while (parts[j] && parts[j].kind === 'blank') j++; return j; }
+    while (i < parts.length) {
+      var p = parts[i];
+      if (p.kind === 'li') {
+        var items = [];
+        while (i < parts.length && parts[i].kind === 'li') {
+          items.push(parts[i]);
+          var n = nextNonBlank(i + 1);
+          i = parts[n] && parts[n].kind === 'li' ? n : i + 1;
+        }
+        out.push({ block: buildList(items) });
+      } else if (p.kind === 'row' || p.kind === 'sep') {
+        var rows = [];
+        while (i < parts.length && (parts[i].kind === 'row' || parts[i].kind === 'sep')) {
+          if (parts[i].kind === 'row') rows.push(parts[i]);
+          i++;
+        }
+        out.push(rows.length >= 2 ? { block: buildTable(rows) }
+                                  : { text: rows.map(function (r) { return r.cells.join(' '); }).join('<br>') });
+      } else {
+        out.push({ text: p.html, blank: p.kind === 'blank' });
+        i++;
+      }
+    }
+
+    // Re-join: text lines with <br>, blocks on their own, no stray blank lines around blocks
+    var res = '', prevBlock = true;
+    out.forEach(function (o, k) {
+      if (o.block) { res += o.block; prevBlock = true; return; }
+      if (o.blank && (prevBlock || (out[k + 1] && out[k + 1].block) || k === out.length - 1)) return;
+      res += (prevBlock ? '' : '<br>') + o.text;
+      prevBlock = false;
+    });
+    el.innerHTML = res;
+  }
+
+  var blocks = document.querySelectorAll('#gm-question, #gm-answer, #gm-expl-body');
+  for (var b = 0; b < blocks.length; b++) {
+    try { format(blocks[b]); } catch (e) { /* never break the card over formatting */ }
+  }
+}());
+</script>
+
 
