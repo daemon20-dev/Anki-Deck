@@ -1,0 +1,5 @@
+#gm-question b, #gm-answer b, #gm-expl-body b,
+#gm-question strong, #gm-answer strong, #gm-expl-body strong { color: #fff; font-weight: 700; }
+#gm-answer i, #gm-expl-body i { color: var(--accent); }
+.gm-block a { color: var(--accent); text-decoration-color: var(--accent-soft); }
+.gm-block ul, .gm-block ol { padding-left: 1.3em; text-align: left; }

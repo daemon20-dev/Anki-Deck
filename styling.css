@@ -501,6 +501,7 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
           hyphens: auto;
 }
 
+/* @rich-text:start — basic deck only; tools/build.py swaps this block out for the cloze deck */
 /* ════════════════════════════════════════════════
    RICH TEXT — formatting pasted into any field (Front, Back,
    Explanation, cloze Text / Back Extra): bold, italic, underline,
@@ -619,6 +620,7 @@ img { max-width: 100%; height: auto; border-radius: 10px; }
 /* Anki {{hint:Field}} links */
 .gm-block a.hint { font-size: 0.85em; color: var(--ink-3); text-decoration: none; border-bottom: 1px dashed var(--ink-4); }
 .gm-block div.hint { margin-top: 0.4em; font-size: 0.9em; color: var(--ink-2); }
+/* @rich-text:end */
 
 /* ── Height-animated collapsibles (no JS measuring needed) ── */
 .gm-collapse {

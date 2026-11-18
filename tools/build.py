@@ -47,6 +47,12 @@ for src, dest in TEMPLATES.items():
 
 # The cloze styling is the shared styling plus the cloze-specific rules.
 css = (ROOT / "styling.css").read_text(encoding="utf-8")
+# The rich-text (pasted lists / tables) rules are for the basic deck only;
+# the cloze deck keeps its own simpler text rules.
+css = re.sub(r"/\* @rich-text:start.*?/\* @rich-text:end \*/\n",
+             (SRC / "cloze" / "text.css").read_text(encoding="utf-8"), css, flags=re.S)
+# and its original question weight
+css = css.replace("  font-weight: 500;   /* normal text stays visibly lighter than pasted bold */", "  font-weight: 600;")
 cloze_css = (SRC / "cloze" / "cloze.css").read_text(encoding="utf-8")
 (ROOT / "cloze" / "styling.css").write_text(css.rstrip("\n") + "\n" + cloze_css, encoding="utf-8")
 print("wrote cloze/styling.css")
